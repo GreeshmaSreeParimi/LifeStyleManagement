@@ -2745,7 +2745,6 @@ id break_title
 id breaks_card
 id breaks_text
 id btnDate
-id btnSubmit
 id btnTime
 id buttonPanel
 id cache_measures

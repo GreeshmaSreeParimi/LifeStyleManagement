@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
@@ -27,21 +28,16 @@ public final class EditBreakDialogBinding implements ViewBinding {
   public final Button btnDate;
 
   @NonNull
-  public final Button btnSubmit;
-
-  @NonNull
   public final Button btnTime;
 
   @NonNull
-  public final TextView editTitle;
+  public final EditText editTitle;
 
   private EditBreakDialogBinding(@NonNull LinearLayout rootView, @NonNull TextView addBreak,
-      @NonNull Button btnDate, @NonNull Button btnSubmit, @NonNull Button btnTime,
-      @NonNull TextView editTitle) {
+      @NonNull Button btnDate, @NonNull Button btnTime, @NonNull EditText editTitle) {
     this.rootView = rootView;
     this.addBreak = addBreak;
     this.btnDate = btnDate;
-    this.btnSubmit = btnSubmit;
     this.btnTime = btnTime;
     this.editTitle = editTitle;
   }
@@ -85,12 +81,6 @@ public final class EditBreakDialogBinding implements ViewBinding {
         break missingId;
       }
 
-      id = R.id.btnSubmit;
-      Button btnSubmit = ViewBindings.findChildViewById(rootView, id);
-      if (btnSubmit == null) {
-        break missingId;
-      }
-
       id = R.id.btnTime;
       Button btnTime = ViewBindings.findChildViewById(rootView, id);
       if (btnTime == null) {
@@ -98,13 +88,13 @@ public final class EditBreakDialogBinding implements ViewBinding {
       }
 
       id = R.id.editTitle;
-      TextView editTitle = ViewBindings.findChildViewById(rootView, id);
+      EditText editTitle = ViewBindings.findChildViewById(rootView, id);
       if (editTitle == null) {
         break missingId;
       }
 
-      return new EditBreakDialogBinding((LinearLayout) rootView, addBreak, btnDate, btnSubmit,
-          btnTime, editTitle);
+      return new EditBreakDialogBinding((LinearLayout) rootView, addBreak, btnDate, btnTime,
+          editTitle);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));
