@@ -19,7 +19,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class BreaksPage extends AppCompatActivity implements AddBreaksPage.AddBreaksPageListener {
+public class BreaksPage extends AppCompatActivity implements AddBreaksPage.AddBreaksPageListener, EditBreaksPage.EditBreaksPageListener {
     private FloatingActionButton b1;
     BreakAdapter breakAdapter;
     ArrayList<Breaks_Storage_Model> Breaks_Storage_ModelArrayList;
@@ -31,6 +31,13 @@ public class BreaksPage extends AppCompatActivity implements AddBreaksPage.AddBr
         setContentView(R.layout.activity_breaks_page);
 
         breakRV = findViewById(R.id.idRVBreaks);
+        breakRV.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                editDialog();
+            }
+        });
+
 
         // Here, we have created new array list and added data to it
         Breaks_Storage_ModelArrayList = new ArrayList<Breaks_Storage_Model>();
@@ -55,7 +62,7 @@ public class BreaksPage extends AppCompatActivity implements AddBreaksPage.AddBr
         b1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                openDialog();
+                openAddDialog();
             }
         });
 
@@ -79,9 +86,14 @@ public class BreaksPage extends AppCompatActivity implements AddBreaksPage.AddBr
     }
 
 
-    private void openDialog() {
+    private void openAddDialog() {
         AddBreaksPage addBreaksPage = new AddBreaksPage();
-        addBreaksPage.show(getSupportFragmentManager(),"Add breaks");
+        addBreaksPage.show(getSupportFragmentManager(), "Add breaks");
+    }
+
+    private void editDialog(){
+        EditBreaksPage editBreaksPage = new EditBreaksPage();
+        editBreaksPage.show(getSupportFragmentManager(),"Edit breaks");
 
     }
 
@@ -108,7 +120,7 @@ public class BreaksPage extends AppCompatActivity implements AddBreaksPage.AddBr
         String breaks_list = gson.toJson(Breaks_Storage_ModelArrayList);
         editor.putString("breaks_list",breaks_list);
         editor.apply();
-        
+
         breakAdapter = new BreakAdapter(this, Breaks_Storage_ModelArrayList);
         breakRV.setAdapter(breakAdapter);
 
