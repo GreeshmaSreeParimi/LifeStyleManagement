@@ -17,7 +17,7 @@
         android:layout_marginTop="82dp"
         android:gravity="center"
         />
-    <TextView
+    <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/editTitle"
@@ -43,11 +43,11 @@
             android:layout_weight="0.5"
             android:text="time" />
     </LinearLayout>
-    <Button
-        android:id="@+id/btnSubmit"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:text="Save" />
+    <!--    <Button-->
+    <!--        android:id="@+id/btnSubmit"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_margin="10dp"-->
+    <!--        android:text="Save" />-->
 
 </LinearLayout>

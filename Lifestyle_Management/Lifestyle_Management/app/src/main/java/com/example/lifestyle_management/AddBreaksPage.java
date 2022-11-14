@@ -12,7 +12,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -40,14 +39,16 @@ public class AddBreaksPage extends AppCompatDialogFragment {
 
     private int picked_day, picked_month, picked_year,picked_hour,picked_minute;
     private String picked_am_pm;
-    private View dialogView;
+    private static String DATA_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
+    private static char TIME_FORMATTER = 'T';
+    String timeToNotify;
 
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        dialogView = inflater.inflate(R.layout.add_breaks_dialog,null);
+        View dialogView = inflater.inflate(R.layout.add_breaks_dialog,null);
         builder.setView(dialogView).setTitle("Add Information")
                 .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
                     @Override
@@ -58,11 +59,33 @@ public class AddBreaksPage extends AppCompatDialogFragment {
                 .setPositiveButton("Submit", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        String breakTitle = break_title.getText().toString();
-                        listener.saveBreaksData(breakTitle, picked_year, picked_month, picked_day, picked_hour,
-                                picked_minute, picked_am_pm);
+                        String title = break_title.getText().toString().trim();                               //access the data from the input field
+                        String date = date_picker_btn.getText().toString().trim();                                 //access the date from the choose date button
+                        String time = time_picker_btn.getText().toString().trim();
+                        if (title.isEmpty()) {
+                            Toast.makeText(getContext(), "Please Enter text", Toast.LENGTH_SHORT).show();   //shows the toast if input field is empty
+                        }
+                        else if(date.equals("date") && time.equals("time")){
+                            //shows toast if date and time are not selected
+                            Toast.makeText(getContext(), "Please select date and time", Toast.LENGTH_SHORT).show();
+                        }
+                        else if(time.equals("time") && !date.equals("date")){
+                            Toast.makeText(getContext(), "Please select time", Toast.LENGTH_SHORT).show();
+
+                        }
+                        else if(!time.equals("time") && date.equals("date")){
+                            Toast.makeText(getContext(), "Please select date", Toast.LENGTH_SHORT).show();
+                        }
+                        else {
+                            setAlarm(getContext(),title, date, time);
+                            Toast.makeText(getContext(), "Alarm set for selected date and time", Toast.LENGTH_SHORT).show();
+
+                        }
+                        listener.saveBreaksData(title,picked_year,picked_month,picked_day,picked_minute,picked_hour,picked_am_pm);
                     }
+
                 });
+
         initDatePicker(dialogView);
         break_title = (EditText) dialogView.findViewById(R.id.break_title);
         date_picker_btn = (Button) dialogView.findViewById(R.id.date_picker);
@@ -90,6 +113,14 @@ public class AddBreaksPage extends AppCompatDialogFragment {
 
     }
 
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("break_title", break_title.getText().toString());
+        outState.putString("break_date", date_picker_btn.getText().toString());
+        outState.putString("break_time", time_picker_btn.getText().toString());
+    }
+    
     private void openTimePicker(View dialogView) {
         TimePickerDialog timePickerDialog = new TimePickerDialog(dialogView.getContext(), android.R.style.Theme_Holo_Light_Dialog_MinWidth,
                 new TimePickerDialog.OnTimeSetListener() {
@@ -108,6 +139,7 @@ public class AddBreaksPage extends AppCompatDialogFragment {
                             picked_am_pm = time_split1[1];
                             String[]  time_split2 = time_picker_btn.getText().toString().split(":");
                             picked_hour = Integer.valueOf(time_split2[0]);
+                            timeToNotify = picked_hour + ":" + picked_minute + ":00";
 
                         } catch (ParseException e) {
                             e.printStackTrace();
@@ -131,7 +163,7 @@ public class AddBreaksPage extends AppCompatDialogFragment {
                 picked_day = day;
                 picked_month = month+1;
                 picked_year = year;
-                date_picker_btn.setText(month+1 + "/" + day + "/"+ year);
+                date_picker_btn.setText(year + "-" + (month+1) + "-"+ day);
 
             }
         };
@@ -144,13 +176,36 @@ public class AddBreaksPage extends AppCompatDialogFragment {
         datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis()-1000);
     }
 
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putString("break_title", break_title.getText().toString());
-        outState.putString("break_date", date_picker_btn.getText().toString());
-        outState.putString("break_time", time_picker_btn.getText().toString());
+    String getDateInFormat(String date) {
+        return date + TIME_FORMATTER + timeToNotify;
     }
+
+    private void setAlarm(Context context ,String text, String date, String time) {
+        AlarmManager am = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);                   //assigning alarm manager object to set alarm
+        Intent intent = new Intent(getContext(), AlarmBroadcast.class);
+        intent.putExtra("event", text);                                                       //sending data to alarm class to create channel and notification
+        intent.putExtra("time", date);
+        intent.putExtra("date", time);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(), 0, intent, PendingIntent.FLAG_IMMUTABLE);
+        String dateandtime = getDateInFormat(date);
+        //String testDate = "2022-10-29"+'T'+timeToNotify+":00";
+        System.out.println(dateandtime);
+        DateFormat formatter = new SimpleDateFormat(DATA_FORMAT);
+
+        try {
+            Date date1 = formatter.parse(dateandtime);
+            System.out.println(date1.getTime());
+            am.setExact(AlarmManager.RTC_WAKEUP, date1.getTime(), pendingIntent);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Intent intentBack = new Intent(getContext(), BreaksPage.class); //this intent will be called once the setting alarm is complete
+        Toast.makeText(getContext(), "Alarm", Toast.LENGTH_SHORT).show();
+        intentBack.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intentBack);                                                                  //navigates from adding reminder activity to mainactivity
+    }
+
+
 
     @Override
     public void onAttach(@NonNull Context context) {

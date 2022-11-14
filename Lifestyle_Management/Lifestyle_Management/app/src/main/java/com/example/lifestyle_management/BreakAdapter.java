@@ -8,21 +8,27 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDialogFragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 
-public class BreakAdapter extends RecyclerView.Adapter<BreakAdapter.ViewHolder> {
+public class BreakAdapter extends RecyclerView.Adapter<BreakAdapter.ViewHolder>  {
 
     private final Context context;
     private final ArrayList<Breaks_Storage_Model> Breaks_Storage_ModelArrayList;
+    private LayoutInflater layoutInflater;
 
     // Constructor
     public BreakAdapter(Context context, ArrayList<Breaks_Storage_Model> Breaks_Storage_ModelArrayList) {
         this.context = context;
         this.Breaks_Storage_ModelArrayList = Breaks_Storage_ModelArrayList;
+        this.layoutInflater = LayoutInflater.from(context);
     }
 
     @NonNull
@@ -44,23 +50,36 @@ public class BreakAdapter extends RecyclerView.Adapter<BreakAdapter.ViewHolder> 
 
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(view.getContext(), EditBreaksPage.class);
+//                Intent intent = new Intent(view.getContext(), EditBreaksPage.class);
                 Bundle b = new Bundle();
+                b.putInt("position", holder.getAdapterPosition());//The first parameter is the key that will be used to retrieve the value, which is the second parameter.
+                b.putString("Break_Name",model.getBreak_name());
+                b.putString("Break_date",model.getBreak_date());
+                b.putString("Break_time",model.getBreak_time());
 
-                //get text for current item
-            //put text into a bundle and add to intent
-                intent.putExtra("BreakName", model.getBreak_name());
-
-                //get position to carry integer
-//                intent.putExtra("position", itemPosition);
+//                newFragment.setArguments(b);
+//                newFragment.show(getSupportFragmentManager(), "add_a_member")
+//
+//                //get text for current item
+//            //put text into a bundle and add to intent
+//                intent.putExtra("BreakName", model.getBreak_name());
+//
+//                //get position to carry integer
+//                //intent.putExtra("position", itemPosition);
 //
 //                intent.putExtras(b);
-
-                //begin activity
-                view.getContext().startActivity(intent);
+//
+//                //begin activity
+//                view.getContext().startActivity(intent);
+                EditBreaksPage editBreaksPage = new EditBreaksPage();
+//                editBreaksPage.show(getSupportFragmentManager(), "Edit Breaks");
+                editBreaksPage.setArguments(b);
+                FragmentManager fragmentManager = ((AppCompatActivity) layoutInflater.getContext()).getSupportFragmentManager();
+                editBreaksPage.show(fragmentManager, "Edit Breaks");
             }
         });
     }
+
 
 
     @Override
