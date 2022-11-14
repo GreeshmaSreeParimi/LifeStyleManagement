@@ -102,12 +102,25 @@ public class AddBreaksPage extends AppCompatDialogFragment {
                 openTimePicker(view);
             }
         });
+        if(savedInstanceState != null){
+            break_title.setText(savedInstanceState.getString("break_title", "Enter Break title"));
+            date_picker_btn.setText(savedInstanceState.getString("break_date", "Select date"));
+            time_picker_btn.setText(savedInstanceState.getString("break_time", "Select time"));
+        }
 
 
         return builder.create();
 
     }
 
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("break_title", break_title.getText().toString());
+        outState.putString("break_date", date_picker_btn.getText().toString());
+        outState.putString("break_time", time_picker_btn.getText().toString());
+    }
+    
     private void openTimePicker(View dialogView) {
         TimePickerDialog timePickerDialog = new TimePickerDialog(dialogView.getContext(), android.R.style.Theme_Holo_Light_Dialog_MinWidth,
                 new TimePickerDialog.OnTimeSetListener() {
