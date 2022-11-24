@@ -7,7 +7,7 @@ public class Breaks_Storage_Model {
     private String break_date;
 
     // Constructor
-    public Breaks_Storage_Model(String break_name, String break_time, String break_date) {
+    public Breaks_Storage_Model(String break_name, String break_date, String break_time) {
         this.break_name = break_name;
         this.break_time = break_time;
         this.break_date = break_date;

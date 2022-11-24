@@ -58,6 +58,7 @@ public class BreakAdapter extends RecyclerView.Adapter<BreakAdapter.ViewHolder> 
                 b.putString("Break_time",model.getBreak_time());
                 System.out.println("model"+model.getBreak_time());
 
+
 //                newFragment.setArguments(b);
 //                newFragment.show(getSupportFragmentManager(), "add_a_member")
 //

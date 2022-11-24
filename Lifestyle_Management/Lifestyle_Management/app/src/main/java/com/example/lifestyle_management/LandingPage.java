@@ -5,7 +5,10 @@ import androidx.cardview.widget.CardView;
 
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 public class LandingPage extends AppCompatActivity {
@@ -19,6 +22,15 @@ public class LandingPage extends AppCompatActivity {
 
         date_card =  findViewById(R.id.date_card);
         break_card = findViewById(R.id.breaks_card);
+        DatabaseHelper databasehelper = new DatabaseHelper(LandingPage.this);
+        Cursor cursor = databasehelper.getALlBreaksData();
+        Log.println(Log.ERROR,"DB_DATA","Cursor_landing  "+ cursor.getCount());
+        if(cursor.getCount() == 0){
+            Log.println(Log.ERROR,"DB_DATA","Cursor1 "+ cursor.getCount());
+            databasehelper.addBreak("Work Break", "2022-12-1","2:30 pm");
+            databasehelper.addBreak("Gym Break", "2022-12-9","6:30 am");
+            databasehelper.addBreak("Water Break", "2022-11-30","11:30 am");
+       }
 
         date_card.setOnClickListener(new View.OnClickListener() {
 
@@ -36,8 +48,6 @@ public class LandingPage extends AppCompatActivity {
 
             }
         });
-
-
     }
     public void openCurrentDatePage(){
         Intent intent = new Intent(this,CurrentDatePage.class);

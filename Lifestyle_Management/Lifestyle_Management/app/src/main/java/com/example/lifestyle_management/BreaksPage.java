@@ -6,10 +6,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
@@ -20,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class BreaksPage extends AppCompatActivity implements AddBreaksPage.AddBreaksPageListener, EditBreaksPage.EditBreaksPageListener {
-    private FloatingActionButton b1;
+    private FloatingActionButton addBreakBtn;
     BreakAdapter breakAdapter;
     ArrayList<Breaks_Storage_Model> Breaks_Storage_ModelArrayList;
     RecyclerView breakRV;
@@ -38,40 +41,24 @@ public class BreaksPage extends AppCompatActivity implements AddBreaksPage.AddBr
             }
         });
 
-
-        // Here, we have created new array list and added data to it
+        DatabaseHelper databasehelper = new DatabaseHelper(BreaksPage.this);
+       Cursor cursor = databasehelper.getALlBreaksData();
         Breaks_Storage_ModelArrayList = new ArrayList<Breaks_Storage_Model>();
-        Breaks_Storage_ModelArrayList.add(new Breaks_Storage_Model("Work Break", "2:30 pm","12/13/2022"));
-        Breaks_Storage_ModelArrayList.add(new Breaks_Storage_Model("Gym Break", "6:30 am","11/13/2022"));
-        Breaks_Storage_ModelArrayList.add(new Breaks_Storage_Model("Water Break", "11:30 am","10/30/2022"));
+        if(cursor.getCount() == 0){
+            Toast.makeText(this.getApplicationContext(),"No Breaks data to display", Toast.LENGTH_SHORT).show();
+        }else {
+            while(cursor.moveToNext()){
+                Breaks_Storage_ModelArrayList.add(new Breaks_Storage_Model(cursor.getString(1), cursor.getString(2),cursor.getString(3)));
+            }
+        }
 
-        SharedPreferences.Editor editor = getSharedPreferences("breaks_data",MODE_PRIVATE).edit();
-        SharedPreferences sharedPreferences = getSharedPreferences("breaks_data",MODE_PRIVATE);
-        String breaks_data = sharedPreferences.getString("breaks_list",null);
-        Type type = new TypeToken<ArrayList<Breaks_Storage_Model>>(){
-
-        }.getType();
-        Gson gson = new Gson();
-        Breaks_Storage_ModelArrayList = (breaks_data == null) ? Breaks_Storage_ModelArrayList : gson.fromJson(breaks_data,type);
-
-        String breaks_list = gson.toJson(Breaks_Storage_ModelArrayList);
-        editor.putString("breaks_list",breaks_list);
-        editor.apply();
-
-        b1 = (FloatingActionButton) findViewById(R.id.fab);
-        b1.setOnClickListener(new View.OnClickListener() {
+        addBreakBtn = (FloatingActionButton) findViewById(R.id.fab);
+        addBreakBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 openAddDialog();
             }
         });
-
-//        @Override
-//        public void onClick(View view) {
-//            Intent intent=new Intent(getApplicationContext(),EditBreaksPage.class);
-//            startActivity(intent);
-//        }
-//    });
 
         // we are initializing our adapter class and passing our arraylist to it.
         breakAdapter = new BreakAdapter(this, Breaks_Storage_ModelArrayList);
@@ -103,6 +90,10 @@ public class BreaksPage extends AppCompatActivity implements AddBreaksPage.AddBr
 
         String date = year + "-" + month + "-" +day;
         String time = hour + ":" + min + " " +am_pm;
+
+        DatabaseHelper databasehelper = new DatabaseHelper(BreaksPage.this);
+        databasehelper.addBreak(break_title,date,time);
+        Breaks_Storage_ModelArrayList.add(new Breaks_Storage_Model(break_title, date,time));
 
         // ArrayList<Breaks_Storage_Model> Breaks_Storage_ModelArrayList;
         SharedPreferences.Editor editor = getSharedPreferences("breaks_data",MODE_PRIVATE).edit();
