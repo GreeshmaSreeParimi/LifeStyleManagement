@@ -26,7 +26,7 @@ public class Breaks_Storage_Model {
         return break_time;
     }
 
-    public void setBreak_time(int course_rating) {
+    public void setBreak_time(String break_time ) {
         this.break_time = break_time;
     }
     public String getBreak_date() {

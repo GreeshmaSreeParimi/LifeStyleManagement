@@ -56,6 +56,7 @@ public class BreakAdapter extends RecyclerView.Adapter<BreakAdapter.ViewHolder> 
                 b.putString("Break_Name",model.getBreak_name());
                 b.putString("Break_date",model.getBreak_date());
                 b.putString("Break_time",model.getBreak_time());
+                System.out.println("model"+model.getBreak_time());
 
 //                newFragment.setArguments(b);
 //                newFragment.show(getSupportFragmentManager(), "add_a_member")
@@ -76,6 +77,8 @@ public class BreakAdapter extends RecyclerView.Adapter<BreakAdapter.ViewHolder> 
                 editBreaksPage.setArguments(b);
                 FragmentManager fragmentManager = ((AppCompatActivity) layoutInflater.getContext()).getSupportFragmentManager();
                 editBreaksPage.show(fragmentManager, "Edit Breaks");
+
+
             }
         });
     }
@@ -91,7 +94,7 @@ public class BreakAdapter extends RecyclerView.Adapter<BreakAdapter.ViewHolder> 
     // View holder class for initializing of your views such as TextView and Imageview
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private final TextView BreakNameTV;
-//        private final TextView BreakTimeTV;
+  //      private final TextView BreakTimeTV;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -104,7 +107,7 @@ public class BreakAdapter extends RecyclerView.Adapter<BreakAdapter.ViewHolder> 
                 }
             });
             BreakNameTV = itemView.findViewById(R.id.idTVBreakName);
-//            BreakTimeTV = itemView.findViewById(R.id.idTVBreakTime);
+ //           BreakTimeTV = itemView.findViewById(R.id.idTVBreakTime);
 
         }
     }

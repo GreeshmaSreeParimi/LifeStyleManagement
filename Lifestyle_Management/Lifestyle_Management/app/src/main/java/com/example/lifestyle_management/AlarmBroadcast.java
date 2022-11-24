@@ -38,8 +38,7 @@ public class AlarmBroadcast extends BroadcastReceiver {
         contentView.setTextViewText(R.id.date, date);
         mBuilder.setSmallIcon(R.drawable.ic_launcher_background);
         mBuilder.setAutoCancel(true);
-        mBuilder.setOngoing(true);
-        mBuilder.setAutoCancel(true);
+        mBuilder.setOngoing(false);
         mBuilder.setPriority(Notification.PRIORITY_HIGH);
         mBuilder.setOnlyAlertOnce(true);
         mBuilder.build().flags = Notification.FLAG_NO_CLEAR | Notification.PRIORITY_HIGH;

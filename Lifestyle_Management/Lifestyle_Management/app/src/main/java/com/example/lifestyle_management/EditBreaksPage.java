@@ -38,23 +38,13 @@ public class EditBreaksPage extends AppCompatDialogFragment {
     private static char TIME_FORMATTER = 'T';
     private EditBreaksPage.EditBreaksPageListener listener;
     private DatePickerDialog datePickerDialog;
-    private String picked_am_pm;
+    private String picked_am_pm,title,date,time;
 
 
     EditText editTitle;
     Button dateButton, timeButton;
     String timeToNotify;
     private int picked_day, picked_month, picked_year,picked_hour,picked_minute;
-
-//    public static EditBreaksPage newInstance(String msg) {
-//        EditBreaksPage fragment = new EditBreaksPage();
-//
-//        Bundle bundle = new Bundle();
-//       // bundle.putString("", msg); // set msg here
-//        fragment.setArguments(bundle);
-//
-//        return fragment;
-//    }
 
 
     @NonNull
@@ -73,13 +63,21 @@ public class EditBreaksPage extends AppCompatDialogFragment {
                 .setPositiveButton("Submit", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
+                            title = editTitle.getText().toString().trim();
+                            date = dateButton.getText().toString().trim();
+                            time = timeButton.getText().toString().trim();
+                            int position=getArguments().getInt("position");
+                            System.out.println("Edit submit on click:"+time);
+
+
+//                        String title = editTitle.getText().toString().trim();                               //access the data from the input field
+//                        String date = dateButton.getText().toString().trim();                                 //access the date from the choose date button
+//                        String time = timeButton.getText().toString().trim();
 //                        String breakTitle = break_title.getText().toString();
 //                        listener.saveBreaksData(breakTitle, picked_year, picked_month, picked_day, picked_hour,
 //                                picked_minute, picked_am_pm);
 
-                        String title = editTitle.getText().toString().trim();                               //access the data from the input field
-                        String date = dateButton.getText().toString().trim();                                 //access the date from the choose date button
-                        String time = timeButton.getText().toString().trim();
+
                         if (title.isEmpty()) {
                             Toast.makeText(getContext(), "Please Enter text", Toast.LENGTH_SHORT).show();   //shows the toast if input field is empty
                         }
@@ -99,15 +97,15 @@ public class EditBreaksPage extends AppCompatDialogFragment {
                             Toast.makeText(getContext(), "Alarm set for selected date and time", Toast.LENGTH_SHORT).show();
 
                         }
-                        listener.saveBreaksData(title,picked_year,picked_month,picked_day,picked_hour,picked_minute,picked_am_pm);
+                        listener.updateBreaksData(title,picked_year,picked_month,picked_day,picked_hour,picked_minute,picked_am_pm,position);
                     }
 
                 });
+
+        initDatePicker(dialogView);
         String Break_Name= getArguments().getString("Break_Name");
         String Break_date= getArguments().getString("Break_date");
         String Break_time= getArguments().getString("Break_time");
-
-
 
         editTitle=(EditText)dialogView.findViewById(R.id.editTitle) ;
         dateButton=(Button)dialogView.findViewById(R.id.btnDate);
@@ -121,7 +119,7 @@ public class EditBreaksPage extends AppCompatDialogFragment {
         dateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                selectDate();
+                openDatePicker();
             }
         });
         //time_picker_btn = (Button) dialogView.findViewById(R.id.time_picker);
@@ -131,11 +129,14 @@ public class EditBreaksPage extends AppCompatDialogFragment {
                 selectTime();
             }
         });
-
-
+        if(savedInstanceState != null){
+            editTitle.setText(savedInstanceState.getString("break_title", Break_Name));
+            dateButton.setText(savedInstanceState.getString("break_date", Break_date));
+            timeButton.setText(savedInstanceState.getString("break_time", Break_time));
+        }
         return builder.create();
-
     }
+
 
     private void selectTime() {                                                                     //this method performs the time picker task
         Calendar calendar = Calendar.getInstance();
@@ -148,25 +149,53 @@ public class EditBreaksPage extends AppCompatDialogFragment {
                 timeButton.setText(FormatTime(i, i1));                                               //sets the button text as selected time
             }
         }, hour, minute, false);
+
         timePickerDialog.show();
     }
-    private void selectDate() {                                                                     //this method performs the date picker task
-        Calendar calendar = Calendar.getInstance();
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH);
-        int day = calendar.get(Calendar.DAY_OF_MONTH);
-        DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker datePicker, int year, int month, int day) {
-                dateButton.setText(year + "-" + (month + 1) + "-" + day);//sets the selected date as test for button
-                picked_year=year;
-                picked_month=(month+1);
-                picked_day=day;
-            }
-
-        }, year, month, day);
+    private void openDatePicker() {
         datePickerDialog.show();
     }
+
+    private void initDatePicker(View dialogView) {
+        DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker datePicker, int year, int month, int day) {
+                picked_day = day;
+                picked_month = month+1;
+                picked_year = year;
+                dateButton.setText(year + "-" + (month+1) + "-"+ day);
+
+            }
+        };
+        Calendar cal = Calendar.getInstance();
+        int year = cal.get(Calendar.YEAR);
+        int month = cal.get(Calendar.MONTH);
+        int day = cal.get(Calendar.DATE);
+        int style = AlertDialog.THEME_HOLO_LIGHT;
+        datePickerDialog = new DatePickerDialog(dialogView.getContext(),style,dateSetListener,year,month,day);
+        datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis()-1000);
+    }
+
+//    //String getDateInFormat(String date) {
+//        return date + TIME_FORMATTER + timeToNotify;
+//    }
+ //   private void selectDate() {                                                                     //this method performs the date picker task
+//        Calendar calendar = Calendar.getInstance();
+//        int year = calendar.get(Calendar.YEAR);
+//        int month = calendar.get(Calendar.MONTH);
+//        int day = calendar.get(Calendar.DAY_OF_MONTH);
+//        DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener() {
+//            @Override
+//            public void onDateSet(DatePicker datePicker, int year, int month, int day) {
+//                dateButton.setText(year + "-" + (month + 1) + "-" + day);//sets the selected date as test for button
+//                picked_year=year;
+//                picked_month=(month+1);
+//                picked_day=day;
+//            }
+//
+//        }, year, month, day);
+//        datePickerDialog.show();
+//    }
     public String FormatTime(int hour, int minute) {                                                //this method converts the time into 12hr format and assigns am or pm
         String time = "";
         String formattedMinute;
@@ -211,8 +240,8 @@ public class EditBreaksPage extends AppCompatDialogFragment {
         AlarmManager am = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);                   //assigning alarm manager object to set alarm
         Intent intent = new Intent(getContext(), AlarmBroadcast.class);
         intent.putExtra("event", text);                                                       //sending data to alarm class to create channel and notification
-        intent.putExtra("time", date);
-        intent.putExtra("date", time);
+        intent.putExtra("date", date);
+        intent.putExtra("time", time);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(), 0, intent, PendingIntent.FLAG_IMMUTABLE);
         String dateandtime = getDateInFormat(date);
         //String testDate = "2022-10-29"+'T'+timeToNotify+":00";
@@ -244,7 +273,7 @@ public class EditBreaksPage extends AppCompatDialogFragment {
     }
 
     public interface  EditBreaksPageListener {
-        void saveBreaksData(String title,int year,int month,int day,int hour,int min,String am_pm);
+        void updateBreaksData(String title,int year,int month,int day,int hour,int min,String am_pm,int i);
 
     }
 }

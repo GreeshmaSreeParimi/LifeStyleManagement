@@ -101,7 +101,7 @@ public class BreaksPage extends AppCompatActivity implements AddBreaksPage.AddBr
     public void saveBreaksData(String break_title,int year,int month,int day,int hour,int min,String am_pm) {
         // This data will be received from add breaks dialog
 
-        String date = month + "-" +day + "-" +year;
+        String date = year + "-" + month + "-" +day;
         String time = hour + ":" + min + " " +am_pm;
 
         // ArrayList<Breaks_Storage_Model> Breaks_Storage_ModelArrayList;
@@ -125,4 +125,35 @@ public class BreaksPage extends AppCompatActivity implements AddBreaksPage.AddBr
         breakRV.setAdapter(breakAdapter);
 
     }
+
+    @Override
+    public void updateBreaksData(String break_title,int year,int month,int day,int hour,int min,String am_pm, int position){
+
+        String date = year + "-" + month + "-" +day;
+        String time = hour + ":" + min + " " +am_pm;
+        SharedPreferences.Editor editor = getSharedPreferences("breaks_data",MODE_PRIVATE).edit();
+        SharedPreferences sharedPreferences = getSharedPreferences("breaks_data",MODE_PRIVATE);
+        String breaks_data = sharedPreferences.getString("breaks_list",null);
+        Type type = new TypeToken<ArrayList<Breaks_Storage_Model>>(){
+
+        }.getType();
+        Gson gson = new Gson();
+        System.out.println(position);
+        Breaks_Storage_ModelArrayList = (breaks_data == null) ? Breaks_Storage_ModelArrayList : gson.fromJson(breaks_data,type);
+        System.out.println(date);
+        Breaks_Storage_ModelArrayList.set(position,new Breaks_Storage_Model(break_title, time, date));
+        breakRV.getAdapter().notifyItemChanged(position);
+
+        //System.out.println(Breaks_Storage_ModelArrayList.size() + " this is the count of breaks ");
+
+        String breaks_list = gson.toJson(Breaks_Storage_ModelArrayList);
+        editor.putString("breaks_list",breaks_list);
+        editor.apply();
+        breakAdapter = new BreakAdapter(this, Breaks_Storage_ModelArrayList);
+        breakRV.setAdapter(breakAdapter);
+
+
+    }
+
+
 }

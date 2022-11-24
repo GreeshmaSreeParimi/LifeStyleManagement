@@ -81,7 +81,7 @@ public class AddBreaksPage extends AppCompatDialogFragment {
                             Toast.makeText(getContext(), "Alarm set for selected date and time", Toast.LENGTH_SHORT).show();
 
                         }
-                        listener.saveBreaksData(title,picked_year,picked_month,picked_day,picked_minute,picked_hour,picked_am_pm);
+                        listener.saveBreaksData(title,picked_year,picked_month,picked_day,picked_hour,picked_minute,picked_am_pm);
                     }
 
                 });
@@ -122,35 +122,85 @@ public class AddBreaksPage extends AppCompatDialogFragment {
     }
     
     private void openTimePicker(View dialogView) {
+        Calendar calendar = Calendar.getInstance();
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        int minute = calendar.get(Calendar.MINUTE);
         TimePickerDialog timePickerDialog = new TimePickerDialog(dialogView.getContext(), android.R.style.Theme_Holo_Light_Dialog_MinWidth,
                 new TimePickerDialog.OnTimeSetListener() {
-                    @Override
-                    public void onTimeSet(TimePicker timePicker, int hour, int minute) {
-                        picked_hour= hour;
-                        picked_minute = minute;
-                        String time = picked_hour + ":" + picked_minute;
-                        SimpleDateFormat hrs_24 = new SimpleDateFormat("hh:mm");
 
-                        try {
-                            Date date = hrs_24.parse(time);
-                            SimpleDateFormat hrs_12 = new SimpleDateFormat("hh:mm aa");
-                            time_picker_btn.setText(hrs_12.format(date));
-                            String[] time_split1 = time_picker_btn.getText().toString().split(" ");
-                            picked_am_pm = time_split1[1];
-                            String[]  time_split2 = time_picker_btn.getText().toString().split(":");
-                            picked_hour = Integer.valueOf(time_split2[0]);
-                            timeToNotify = picked_hour + ":" + picked_minute + ":00";
-
-                        } catch (ParseException e) {
-                            e.printStackTrace();
+                        @Override
+                        public void onTimeSet(TimePicker timePicker, int i, int i1) {
+                            timeToNotify = i + ":" + i1 + ":00";                                                        //temp variable to store the time to set alarm
+                            time_picker_btn.setText(FormatTime(i, i1));                                               //sets the button text as selected time
                         }
-                    }
-                },12,0,false);
-        timePickerDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        timePickerDialog.updateTime(picked_hour,picked_minute);
-        timePickerDialog.show();
+                    }, hour, minute, false);
+
+                    timePickerDialog.show();
+                }
+    public String FormatTime(int hour, int minute) {                                                //this method converts the time into 12hr format and assigns am or pm
+        String time = "";
+        String formattedMinute;
+
+        if (minute / 10 == 0) {
+            formattedMinute = "0" + minute;
+            picked_minute=minute;
+        } else {
+            formattedMinute = "" + minute;
+            picked_minute=minute;
+        }
+        if (hour == 0) {
+            time = "12" + ":" + formattedMinute + " AM";
+            picked_am_pm="AM";
+            picked_hour=12;
+
+        } else if (hour < 12) {
+            time = hour + ":" + formattedMinute + " AM";
+            picked_am_pm="AM";
+            picked_hour=hour;
+        } else if (hour == 12) {
+            time = "12" + ":" + formattedMinute + " PM";
+            picked_am_pm="PM";
+            picked_hour=hour;
+        } else {
+            int temp = hour - 12;
+            time = temp + ":" + formattedMinute + " PM";
+            picked_am_pm="PM";
+            picked_hour=temp;
+        }
+
+        return time;
+
 
     }
+
+
+//                    @Override
+//                    public void onTimeSet(TimePicker timePicker, int hour, int minute) {
+//                        picked_hour= hour;
+//                        picked_minute = minute;
+//                        String time = picked_hour + ":" + picked_minute;
+//                        SimpleDateFormat hrs_24 = new SimpleDateFormat("hh:mm");
+//
+//                        try {
+//                            Date date = hrs_24.parse(time);
+//                            SimpleDateFormat hrs_12 = new SimpleDateFormat("hh:mm aa");
+//                            time_picker_btn.setText(hrs_12.format(date));
+//                            String[] time_split1 = time_picker_btn.getText().toString().split(" ");
+//                            picked_am_pm = time_split1[1];
+//                            String[]  time_split2 = time_picker_btn.getText().toString().split(":");
+//                            picked_hour = Integer.valueOf(time_split2[0]);
+//                            timeToNotify = picked_hour + ":" + picked_minute + ":00";
+//
+//                        } catch (ParseException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                },12,0,false);
+//        timePickerDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+//        timePickerDialog.updateTime(picked_hour,picked_minute);
+//        timePickerDialog.show();
+//
+//    }
 
     private void openDatePicker() {
         datePickerDialog.show();
@@ -184,8 +234,8 @@ public class AddBreaksPage extends AppCompatDialogFragment {
         AlarmManager am = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);                   //assigning alarm manager object to set alarm
         Intent intent = new Intent(getContext(), AlarmBroadcast.class);
         intent.putExtra("event", text);                                                       //sending data to alarm class to create channel and notification
-        intent.putExtra("time", date);
-        intent.putExtra("date", time);
+        intent.putExtra("date", date);
+        intent.putExtra("time", time);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(), 0, intent, PendingIntent.FLAG_IMMUTABLE);
         String dateandtime = getDateInFormat(date);
         //String testDate = "2022-10-29"+'T'+timeToNotify+":00";
