@@ -13,54 +13,30 @@ import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
+    private EditText loginUsername , loginPassword;
+    private DatabaseHelper myDb;
+    private Button login;
+    SharedPreferences sp;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final EditText etName = (EditText) findViewById(R.id.username);
-        final EditText etPassword = (EditText) findViewById(R.id.password);
+        loginUsername = findViewById(R.id.username);
+        loginPassword = findViewById(R.id.password);
+        login = (Button) findViewById(R.id.login);
 
-        Button login = (Button) findViewById(R.id.login);
+        sp = getSharedPreferences("login",MODE_PRIVATE);
+        if(sp.getBoolean("logged",true)){
+            startActivity(new Intent(MainActivity.this , LandingPage.class));
+        }
+        else
+        {
+            myDb = new DatabaseHelper(this);
+            loginUser();
+        }
 
-        login.setOnClickListener(new View.OnClickListener() {
-            final EditText userN = (EditText) findViewById(R.id.username);
-            final EditText password = (EditText) findViewById(R.id.password);
-
-            @Override
-            public void onClick(View v) {
-                if (userN.getText().toString().trim().length() == 0) {
-                    userN.setError("Please enter the email");
-
-                }
-                else if (password.getText().toString().trim().length() == 0) {
-                    password.setError("Please enter the password");
-                }
-                else {
-
-                    String user = etName.getText().toString();
-                    String password = etPassword.getText().toString();
-                    SharedPreferences preferences = getSharedPreferences("MYPREFS", MODE_PRIVATE);
-
-                    String userDetails = preferences.getString(user + password + "data", "No information on that user.");
-                    String userPrefPass = preferences.getString("newPassword", "");
-                    String userPrefName = preferences.getString("email", "");
-
-                    SharedPreferences.Editor editor = preferences.edit();
-                    editor.putString("display", userDetails);
-                    editor.commit();
-
-                    if(user.equals(userPrefName) && password.equals(userPrefPass)) {
-                        Intent displayScreen = new Intent(MainActivity.this, LandingPage.class);
-                        startActivity(displayScreen);
-                    }
-                    else
-                    {
-                        Toast.makeText(MainActivity.this, "Invalid Email or Password", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            }
-        });
 
         TextView createAcc = (TextView) findViewById(R.id.createaccount);
 
@@ -76,7 +52,33 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void loginUser(){
+        login.setOnClickListener(new View.OnClickListener() {
 
+            @Override
+            public void onClick(View v) {
+                if (loginUsername.getText().toString().trim().length() == 0) {
+                    loginUsername.setError("Please enter the email");
+
+                }
+                else if (loginPassword.getText().toString().trim().length() == 0) {
+                    loginPassword.setError("Please enter the password");
+                }
+                else{
+                    boolean var = myDb.checkUser(loginUsername.getText().toString() , loginPassword.getText().toString());
+                    if (var){
+                        sp.edit().putBoolean("logged",true).apply();
+                        Toast.makeText(MainActivity.this, "Login SuccessfulL", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(MainActivity.this , LandingPage.class));
+                        finish();
+                    }else{
+                        Toast.makeText(MainActivity.this, "Login Failed !!", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+        });
+
+    }
     private void configureSkipAcc()
     {
         TextView skip = (TextView) findViewById(R.id.skip);
