@@ -17,6 +17,7 @@ public class CreateAccount extends AppCompatActivity {
     TextView textview;
     EditText name,email,password,confirm_password;
     Button submit;
+    private DatabaseHelper myDB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,37 +31,25 @@ public class CreateAccount extends AppCompatActivity {
         confirm_password=findViewById(R.id.confirm_password);
 
         submit=findViewById(R.id.create_submit_button);
+        myDB = new DatabaseHelper(this);
+        insertUser();
+
+        }
+
+    private void insertUser(){
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                boolean checkData=checkDataEntered();
-                if(checkData==true)
-                {
-                    Intent intent=new Intent(CreateAccount.this,LandingPage.class);
-                    startActivity(intent);
-
+            public void onClick(View v) {
+                boolean checkData = checkDataEntered();
+                if(checkData==true) {
+                    boolean var = myDB.registerUser(email.getText().toString(), email.getText().toString(), password.getText().toString());
+                    if (var) {
+                        Toast.makeText(CreateAccount.this, "User Registered Successfully !!", Toast.LENGTH_SHORT).show();
+                    } else
+                        Toast.makeText(CreateAccount.this, "User Already Exists !!", Toast.LENGTH_SHORT).show();
+                    }
                 }
-
-                SharedPreferences preferences = getSharedPreferences("MYPREFS",MODE_PRIVATE);
-                String newUser  = name.getText().toString();
-                String newPassword = password.getText().toString();
-                String newEmail = email.getText().toString();
-
-                SharedPreferences.Editor editor = preferences.edit();
-
-                //stores 3 new instances of sharedprefs. Both the user and password's keys are the same as the input.
-                //Must be done this way because sharedprefs is stupid and inefficient. You cannot store Arrays easily
-                //so I use strings instead.
-                editor.putString("newUser",newUser);
-                editor.commit();
-                editor.putString("newPassword", newPassword);
-                editor.commit();
-                editor.putString("email", newEmail);
-                editor.commit();
-                editor.putString("newUser" + "newPassword" + "data", newUser + "\n" + newEmail);
-                editor.commit();
-            }});
-
+        });
     }
 
     boolean isEmail(EditText text) {
