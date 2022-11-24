@@ -47,4 +47,17 @@ public class LandingPage extends AppCompatActivity {
         Intent intent = new Intent(this,BreaksPage.class);
         startActivity(intent);
     }
+    
+   @Override
+    public void onBackPressed() {
+        SharedPreferences sharedPreferences = getSharedPreferences("login",MODE_PRIVATE);
+        if (sharedPreferences.getBoolean("logged", true)) {
+            moveTaskToBack(true);
+        }
+        else
+        {
+            finish();
+        }
+
+    }
 }
