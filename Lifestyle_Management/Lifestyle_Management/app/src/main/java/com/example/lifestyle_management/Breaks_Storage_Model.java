@@ -1,16 +1,25 @@
 package com.example.lifestyle_management;
 
 public class Breaks_Storage_Model {
-
+    private int break_ID;
     private String break_name;
     private String break_time;
     private String break_date;
 
     // Constructor
-    public Breaks_Storage_Model(String break_name, String break_date, String break_time) {
+    public Breaks_Storage_Model(int ID , String break_name, String break_date, String break_time) {
+        this.break_ID = ID;
         this.break_name = break_name;
         this.break_time = break_time;
         this.break_date = break_date;
+    }
+
+    public int getBreak_ID() {
+        return break_ID;
+    }
+
+    public void setBreak_ID(int break_ID) {
+        this.break_ID = break_ID;
     }
 
     // Getter and Setter

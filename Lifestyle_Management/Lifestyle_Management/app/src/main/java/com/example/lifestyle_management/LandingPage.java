@@ -22,9 +22,9 @@ public class LandingPage extends AppCompatActivity {
 
         date_card =  findViewById(R.id.date_card);
         break_card = findViewById(R.id.breaks_card);
+
         DatabaseHelper databasehelper = new DatabaseHelper(LandingPage.this);
         Cursor cursor = databasehelper.getALlBreaksData();
-        Log.println(Log.ERROR,"DB_DATA","Cursor_landing  "+ cursor.getCount());
         if(cursor.getCount() == 0){
             Log.println(Log.ERROR,"DB_DATA","Cursor1 "+ cursor.getCount());
             databasehelper.addBreak("Work Break", "2022-12-1","2:30 pm");

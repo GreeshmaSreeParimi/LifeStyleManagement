@@ -27,6 +27,7 @@ public class BreaksPage extends AppCompatActivity implements AddBreaksPage.AddBr
     BreakAdapter breakAdapter;
     ArrayList<Breaks_Storage_Model> Breaks_Storage_ModelArrayList;
     RecyclerView breakRV;
+    DatabaseHelper databasehelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,14 +42,14 @@ public class BreaksPage extends AppCompatActivity implements AddBreaksPage.AddBr
             }
         });
 
-        DatabaseHelper databasehelper = new DatabaseHelper(BreaksPage.this);
-       Cursor cursor = databasehelper.getALlBreaksData();
+        databasehelper = new DatabaseHelper(BreaksPage.this);
+        Cursor cursor = databasehelper.getALlBreaksData();
         Breaks_Storage_ModelArrayList = new ArrayList<Breaks_Storage_Model>();
         if(cursor.getCount() == 0){
             Toast.makeText(this.getApplicationContext(),"No Breaks data to display", Toast.LENGTH_SHORT).show();
         }else {
             while(cursor.moveToNext()){
-                Breaks_Storage_ModelArrayList.add(new Breaks_Storage_Model(cursor.getString(1), cursor.getString(2),cursor.getString(3)));
+                Breaks_Storage_ModelArrayList.add(new Breaks_Storage_Model(cursor.getInt(0),cursor.getString(1), cursor.getString(2),cursor.getString(3)));
             }
         }
 
@@ -91,27 +92,19 @@ public class BreaksPage extends AppCompatActivity implements AddBreaksPage.AddBr
         String date = year + "-" + month + "-" +day;
         String time = hour + ":" + min + " " +am_pm;
 
-        DatabaseHelper databasehelper = new DatabaseHelper(BreaksPage.this);
+        databasehelper = new DatabaseHelper(BreaksPage.this);
         databasehelper.addBreak(break_title,date,time);
-        Breaks_Storage_ModelArrayList.add(new Breaks_Storage_Model(break_title, date,time));
 
-        // ArrayList<Breaks_Storage_Model> Breaks_Storage_ModelArrayList;
-        SharedPreferences.Editor editor = getSharedPreferences("breaks_data",MODE_PRIVATE).edit();
-        SharedPreferences sharedPreferences = getSharedPreferences("breaks_data",MODE_PRIVATE);
-        String breaks_data = sharedPreferences.getString("breaks_list",null);
-        Type type = new TypeToken<ArrayList<Breaks_Storage_Model>>(){
-
-        }.getType();
-        Gson gson = new Gson();
-        Breaks_Storage_ModelArrayList = (breaks_data == null) ? Breaks_Storage_ModelArrayList : gson.fromJson(breaks_data,type);
-        Breaks_Storage_ModelArrayList.add(new Breaks_Storage_Model(break_title, time,date));
-
-        System.out.println(Breaks_Storage_ModelArrayList.size() + " this is the count of breaks ");
-
-        String breaks_list = gson.toJson(Breaks_Storage_ModelArrayList);
-        editor.putString("breaks_list",breaks_list);
-        editor.apply();
-
+        Cursor cursor = databasehelper.getALlBreaksData();
+        Breaks_Storage_ModelArrayList = new ArrayList<Breaks_Storage_Model>();
+        if(cursor.getCount() == 0){
+            Toast.makeText(this.getApplicationContext(),"No Breaks data to display", Toast.LENGTH_SHORT).show();
+        }else {
+            while(cursor.moveToNext()){
+                Log.println(Log.ERROR,"DB_DATA",cursor.getString(1));
+                Breaks_Storage_ModelArrayList.add(new Breaks_Storage_Model(cursor.getInt(0),cursor.getString(1), cursor.getString(2),cursor.getString(3)));
+            }
+        }
         breakAdapter = new BreakAdapter(this, Breaks_Storage_ModelArrayList);
         breakRV.setAdapter(breakAdapter);
 
@@ -132,7 +125,7 @@ public class BreaksPage extends AppCompatActivity implements AddBreaksPage.AddBr
         System.out.println(position);
         Breaks_Storage_ModelArrayList = (breaks_data == null) ? Breaks_Storage_ModelArrayList : gson.fromJson(breaks_data,type);
         System.out.println(date);
-        Breaks_Storage_ModelArrayList.set(position,new Breaks_Storage_Model(break_title, time, date));
+      //  Breaks_Storage_ModelArrayList.set(position,new Breaks_Storage_Model(break_title, time, date));
         breakRV.getAdapter().notifyItemChanged(position);
 
         //System.out.println(Breaks_Storage_ModelArrayList.size() + " this is the count of breaks ");
