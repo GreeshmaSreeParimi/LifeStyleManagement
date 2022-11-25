@@ -49,7 +49,7 @@ public class BreaksPage extends AppCompatActivity implements AddBreaksPage.AddBr
             Toast.makeText(this.getApplicationContext(),"No Breaks data to display", Toast.LENGTH_SHORT).show();
         }else {
             while(cursor.moveToNext()){
-                Breaks_Storage_ModelArrayList.add(new Breaks_Storage_Model(cursor.getInt(0),cursor.getString(1), cursor.getString(2),cursor.getString(3)));
+                Breaks_Storage_ModelArrayList.add(new Breaks_Storage_Model(cursor.getString(0),cursor.getString(1), cursor.getString(2),cursor.getString(3)));
             }
         }
 
@@ -102,7 +102,7 @@ public class BreaksPage extends AppCompatActivity implements AddBreaksPage.AddBr
         }else {
             while(cursor.moveToNext()){
                 Log.println(Log.ERROR,"DB_DATA",cursor.getString(1));
-                Breaks_Storage_ModelArrayList.add(new Breaks_Storage_Model(cursor.getInt(0),cursor.getString(1), cursor.getString(2),cursor.getString(3)));
+                Breaks_Storage_ModelArrayList.add(new Breaks_Storage_Model(cursor.getString(0),cursor.getString(1), cursor.getString(2),cursor.getString(3)));
             }
         }
         breakAdapter = new BreakAdapter(this, Breaks_Storage_ModelArrayList);
@@ -111,28 +111,16 @@ public class BreaksPage extends AppCompatActivity implements AddBreaksPage.AddBr
     }
 
     @Override
-    public void updateBreaksData(String break_title,int year,int month,int day,int hour,int min,String am_pm, int position){
+    public void updateBreaksData(String break_title,int year,int month,int day,int hour,int min,String am_pm, int position,String breakID){
 
         String date = year + "-" + month + "-" +day;
         String time = hour + ":" + min + " " +am_pm;
-        SharedPreferences.Editor editor = getSharedPreferences("breaks_data",MODE_PRIVATE).edit();
-        SharedPreferences sharedPreferences = getSharedPreferences("breaks_data",MODE_PRIVATE);
-        String breaks_data = sharedPreferences.getString("breaks_list",null);
-        Type type = new TypeToken<ArrayList<Breaks_Storage_Model>>(){
 
-        }.getType();
-        Gson gson = new Gson();
-        System.out.println(position);
-        Breaks_Storage_ModelArrayList = (breaks_data == null) ? Breaks_Storage_ModelArrayList : gson.fromJson(breaks_data,type);
-        System.out.println(date);
-      //  Breaks_Storage_ModelArrayList.set(position,new Breaks_Storage_Model(break_title, time, date));
+        Breaks_Storage_ModelArrayList.set(position,new Breaks_Storage_Model(breakID,break_title, time, date));
+        databasehelper = new DatabaseHelper(BreaksPage.this);
+        databasehelper.updateBreak(breakID,break_title,date,time);
         breakRV.getAdapter().notifyItemChanged(position);
 
-        //System.out.println(Breaks_Storage_ModelArrayList.size() + " this is the count of breaks ");
-
-        String breaks_list = gson.toJson(Breaks_Storage_ModelArrayList);
-        editor.putString("breaks_list",breaks_list);
-        editor.apply();
         breakAdapter = new BreakAdapter(this, Breaks_Storage_ModelArrayList);
         breakRV.setAdapter(breakAdapter);
 

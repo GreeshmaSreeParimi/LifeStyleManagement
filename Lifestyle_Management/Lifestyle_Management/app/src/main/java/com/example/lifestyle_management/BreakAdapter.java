@@ -53,6 +53,7 @@ public class BreakAdapter extends RecyclerView.Adapter<BreakAdapter.ViewHolder> 
 //                Intent intent = new Intent(view.getContext(), EditBreaksPage.class);
                 Bundle b = new Bundle();
                 b.putInt("position", holder.getAdapterPosition());//The first parameter is the key that will be used to retrieve the value, which is the second parameter.
+                b.putString("Break_ID",model.getBreak_ID());
                 b.putString("Break_Name",model.getBreak_name());
                 b.putString("Break_date",model.getBreak_date());
                 b.putString("Break_time",model.getBreak_time());

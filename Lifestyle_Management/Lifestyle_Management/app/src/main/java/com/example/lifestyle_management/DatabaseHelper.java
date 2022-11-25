@@ -127,7 +127,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         long result = db.insert(BREAKS_TABLE, null, values);
 
         if(result == -1){
-            Toast.makeText(context,"error while adding user", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context,"error while adding break", Toast.LENGTH_SHORT).show();
         }else{
             Toast.makeText(context,"Break added successfully", Toast.LENGTH_SHORT).show();
         }
@@ -144,6 +144,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         return cursor;
 
+    }
+    public void updateBreak(String breakID, String breakName, String breakDate, String breakTime){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(BREAK_NAME,breakName);
+        values.put(BREAK_DATE,breakDate);
+        values.put(BREAK_TIME,breakTime);
+        long result = db.update(BREAKS_TABLE,values,"BREAK_ID =?", new String[]{breakID});
+        if(result == -1){
+            Toast.makeText(context,"error while updating break", Toast.LENGTH_SHORT).show();
+        }else{
+            Toast.makeText(context,"Break updated successfully", Toast.LENGTH_SHORT).show();
+        }
     }
 
 }

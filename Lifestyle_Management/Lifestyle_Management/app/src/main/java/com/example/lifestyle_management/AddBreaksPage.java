@@ -63,7 +63,8 @@ public class AddBreaksPage extends AppCompatDialogFragment {
                         String date = date_picker_btn.getText().toString().trim();                                 //access the date from the choose date button
                         String time = time_picker_btn.getText().toString().trim();
                         if (title.isEmpty()) {
-                            Toast.makeText(getContext(), "Please Enter text", Toast.LENGTH_SHORT).show();   //shows the toast if input field is empty
+                            Toast.makeText(getContext(), "Please Enter text", Toast.LENGTH_SHORT).show();
+                            //shows the toast if input field is empty
                         }
                         else if(date.equals("date") && time.equals("time")){
                             //shows toast if date and time are not selected
