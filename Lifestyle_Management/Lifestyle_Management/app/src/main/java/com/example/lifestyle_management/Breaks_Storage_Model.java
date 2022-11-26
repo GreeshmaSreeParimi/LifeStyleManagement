@@ -5,13 +5,15 @@ public class Breaks_Storage_Model {
     private String break_name;
     private String break_time;
     private String break_date;
+    private int break_requestCode;
 
     // Constructor
-    public Breaks_Storage_Model(String ID , String break_name, String break_date, String break_time) {
+    public Breaks_Storage_Model(String ID , String break_name, String break_date, String break_time, int break_requestCode) {
         this.break_ID = ID;
         this.break_name = break_name;
         this.break_time = break_time;
         this.break_date = break_date;
+        this.break_requestCode = break_requestCode;
     }
 
     public String getBreak_ID() {
@@ -44,4 +46,7 @@ public class Breaks_Storage_Model {
     public void setBreak_date(String break_date) {
         this.break_date = break_date;
     }
+
+    public int getBreak_requestCode() { return break_requestCode;}
+    public void setBreak_requestCode(int break_requestCode) {this.break_requestCode = break_requestCode;}
 }

@@ -27,9 +27,9 @@ public class LandingPage extends AppCompatActivity {
         Cursor cursor = databasehelper.getALlBreaksData();
         if(cursor.getCount() == 0){
             Log.println(Log.ERROR,"DB_DATA","Cursor1 "+ cursor.getCount());
-            databasehelper.addBreak("Work Break", "2022-12-1","2:30 pm");
-            databasehelper.addBreak("Gym Break", "2022-12-9","6:30 am");
-            databasehelper.addBreak("Water Break", "2022-11-30","11:30 am");
+            databasehelper.addBreak("Work Break", "2022-12-1","2:30 pm", 121);
+            databasehelper.addBreak("Gym Break", "2022-12-9","6:30 am", 162);
+            databasehelper.addBreak("Water Break", "2022-11-30","11:30 am", 741);
        }
 
         date_card.setOnClickListener(new View.OnClickListener() {

@@ -2,7 +2,6 @@ package com.example.lifestyle_management;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDialogFragment;
 
 import android.app.AlarmManager;
@@ -20,11 +19,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
-
-import com.example.lifestyle_management.R;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -43,8 +39,8 @@ public class EditBreaksPage extends AppCompatDialogFragment {
 
     EditText editTitle;
     Button dateButton, timeButton;
-    String timeToNotify;
-    private int picked_day, picked_month, picked_year,picked_hour,picked_minute;
+    //String timeToNotify;
+   // private int picked_day, picked_month, picked_year,picked_hour,picked_minute;
 
 
     @NonNull
@@ -65,10 +61,22 @@ public class EditBreaksPage extends AppCompatDialogFragment {
                     public void onClick(DialogInterface dialogInterface, int i) {
                             title = editTitle.getText().toString().trim();
                             date = dateButton.getText().toString().trim();
-                            time = timeButton.getText().toString().trim();
-                            int position=getArguments().getInt("position");
-                            String break_ID = getArguments().getString("Break_ID");
-                            System.out.println("Edit submit on click:"+time);
+                            String out_time = timeButton.getText().toString().trim();
+                            SimpleDateFormat displayFormat = new SimpleDateFormat("HH:mm");
+                            SimpleDateFormat parseFormat = new SimpleDateFormat("hh:mm a");
+                        try {
+                            Date userTime = parseFormat.parse(out_time);
+                            time = displayFormat.format(userTime);
+                            System.out.println("Input time is :"+time);
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+
+
+                        int position=getArguments().getInt("position");
+                        int requestCode = getArguments().getInt("Break_requestCode");
+                        String break_ID = getArguments().getString("Break_ID");
+                        System.out.println("Edit submit on click:"+time);
 
 
 //                        String title = editTitle.getText().toString().trim();                               //access the data from the input field
@@ -94,11 +102,11 @@ public class EditBreaksPage extends AppCompatDialogFragment {
                             Toast.makeText(getContext(), "Please select date", Toast.LENGTH_SHORT).show();
                         }
                         else {
-                            setAlarm(getContext(),title, date, time);
+                            setAlarm(getContext(),title, date, time, requestCode);
                             Toast.makeText(getContext(), "Alarm set for selected date and time", Toast.LENGTH_SHORT).show();
 
                         }
-                        listener.updateBreaksData(title,picked_year,picked_month,picked_day,picked_hour,picked_minute,picked_am_pm,position,break_ID);
+                        listener.updateBreaksData(title,date,out_time,position,requestCode,break_ID);
                     }
 
                 });
@@ -107,6 +115,7 @@ public class EditBreaksPage extends AppCompatDialogFragment {
         String Break_Name= getArguments().getString("Break_Name");
         String Break_date= getArguments().getString("Break_date");
         String Break_time= getArguments().getString("Break_time");
+
 
         editTitle=(EditText)dialogView.findViewById(R.id.editTitle) ;
         dateButton=(Button)dialogView.findViewById(R.id.btnDate);
@@ -146,7 +155,7 @@ public class EditBreaksPage extends AppCompatDialogFragment {
         TimePickerDialog timePickerDialog = new TimePickerDialog(getContext(), new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker timePicker, int i, int i1) {
-                timeToNotify = i + ":" + i1 + ":00";                                                        //temp variable to store the time to set alarm
+                //timeToNotify = i + ":" + i1 + ":00";                                                        //temp variable to store the time to set alarm
                 timeButton.setText(FormatTime(i, i1));                                               //sets the button text as selected time
             }
         }, hour, minute, false);
@@ -161,9 +170,9 @@ public class EditBreaksPage extends AppCompatDialogFragment {
         DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker datePicker, int year, int month, int day) {
-                picked_day = day;
-                picked_month = month+1;
-                picked_year = year;
+//                picked_day = day;
+//                picked_month = month+1;
+//                picked_year = year;
                 dateButton.setText(year + "-" + (month+1) + "-"+ day);
 
             }
@@ -203,50 +212,58 @@ public class EditBreaksPage extends AppCompatDialogFragment {
 
         if (minute / 10 == 0) {
             formattedMinute = "0" + minute;
-            picked_minute=minute;
+            //picked_minute=minute;
         } else {
             formattedMinute = "" + minute;
-            picked_minute=minute;
+            //picked_minute=minute;
         }
         if (hour == 0) {
             time = "12" + ":" + formattedMinute + " AM";
             picked_am_pm="AM";
-            picked_hour=12;
+           // picked_hour=12;
 
         } else if (hour < 12) {
             time = hour + ":" + formattedMinute + " AM";
             picked_am_pm="AM";
-            picked_hour=hour;
+            //picked_hour=hour;
         } else if (hour == 12) {
             time = "12" + ":" + formattedMinute + " PM";
             picked_am_pm="PM";
-            picked_hour=hour;
+            //picked_hour=hour;
         } else {
             int temp = hour - 12;
             time = temp + ":" + formattedMinute + " PM";
             picked_am_pm="PM";
-            picked_hour=temp;
+            //picked_hour=temp;
         }
 
         return time;
 
 
     }
-    String getDateInFormat(String date) {
-        return date + TIME_FORMATTER + timeToNotify;
+    String getDateInFormat(String date, String time) {
+        return date + TIME_FORMATTER + time +":00";
     }
 
 
-    private void setAlarm(Context context ,String text, String date, String time) {
+    private void setAlarm(Context context, String text, String date, String time, int requestCode) {
         AlarmManager am = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);                   //assigning alarm manager object to set alarm
         Intent intent = new Intent(getContext(), AlarmBroadcast.class);
-        intent.putExtra("event", text);                                                       //sending data to alarm class to create channel and notification
-        intent.putExtra("date", date);
-        intent.putExtra("time", time);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(), 0, intent, PendingIntent.FLAG_IMMUTABLE);
-        String dateandtime = getDateInFormat(date);
+        Bundle b= new Bundle();
+        b.putString("event", text);
+        b.putString("date", date);
+        b.putString("time", time);
+        b.putInt("requestCode",requestCode);
+        intent.putExtras(b);
+
+//        intent.putExtra("event", text);                                                       //sending data to alarm class to create channel and notification
+//        intent.putExtra("date", date);
+//        intent.putExtra("time", time);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(), requestCode, intent, PendingIntent.FLAG_IMMUTABLE);
+        String dateandtime = getDateInFormat(date,time);
         //String testDate = "2022-10-29"+'T'+timeToNotify+":00";
-        System.out.println(dateandtime);
+        System.out.println("Edit page event : "+text);
+        System.out.println("Edit page datetime : "+dateandtime);
         DateFormat formatter = new SimpleDateFormat(DATA_FORMAT);
 
         try {
@@ -257,7 +274,7 @@ public class EditBreaksPage extends AppCompatDialogFragment {
             e.printStackTrace();
         }
         Intent intentBack = new Intent(getContext(), BreaksPage.class); //this intent will be called once the setting alarm is complete
-        Toast.makeText(getContext(), "Alarm", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), "Alarm for "+text, Toast.LENGTH_SHORT).show();
         intentBack.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intentBack);                                                                  //navigates from adding reminder activity to mainactivity
     }
@@ -274,7 +291,7 @@ public class EditBreaksPage extends AppCompatDialogFragment {
     }
 
     public interface  EditBreaksPageListener {
-        void updateBreaksData(String title,int year,int month,int day,int hour,int min,String am_pm,int i,String break_ID);
+        void updateBreaksData(String title,String date,String time,int i,int requestCode,String break_ID);
 
     }
 }

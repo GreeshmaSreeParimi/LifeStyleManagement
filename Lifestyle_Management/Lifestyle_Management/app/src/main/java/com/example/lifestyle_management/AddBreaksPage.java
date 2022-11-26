@@ -9,8 +9,6 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +27,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.UUID;
 
 public class AddBreaksPage extends AppCompatDialogFragment {
 
@@ -38,6 +37,7 @@ public class AddBreaksPage extends AppCompatDialogFragment {
     private Button date_picker_btn, time_picker_btn;
 
     private int picked_day, picked_month, picked_year,picked_hour,picked_minute;
+    private int requestCode;
     private String picked_am_pm;
     private static String DATA_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
     private static char TIME_FORMATTER = 'T';
@@ -82,7 +82,7 @@ public class AddBreaksPage extends AppCompatDialogFragment {
                             Toast.makeText(getContext(), "Alarm set for selected date and time", Toast.LENGTH_SHORT).show();
 
                         }
-                        listener.saveBreaksData(title,picked_year,picked_month,picked_day,picked_hour,picked_minute,picked_am_pm);
+                        listener.saveBreaksData(title,picked_year,picked_month,picked_day,picked_hour,picked_minute,requestCode,picked_am_pm);
                     }
 
                 });
@@ -231,13 +231,23 @@ public class AddBreaksPage extends AppCompatDialogFragment {
         return date + TIME_FORMATTER + timeToNotify;
     }
 
+    private int generateUUID(){
+        UUID idOne = UUID.randomUUID();
+        String str=""+idOne;
+        int uid=str.hashCode();
+        String filterStr=""+uid;
+        str=filterStr.replaceAll("-", "");
+        return Integer.parseInt(str);
+    }
     private void setAlarm(Context context ,String text, String date, String time) {
         AlarmManager am = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);                   //assigning alarm manager object to set alarm
         Intent intent = new Intent(getContext(), AlarmBroadcast.class);
+        requestCode = generateUUID();
         intent.putExtra("event", text);                                                       //sending data to alarm class to create channel and notification
         intent.putExtra("date", date);
         intent.putExtra("time", time);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(), 0, intent, PendingIntent.FLAG_IMMUTABLE);
+        intent.putExtra("requestCode", requestCode);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(), requestCode, intent, PendingIntent.FLAG_IMMUTABLE);
         String dateandtime = getDateInFormat(date);
         //String testDate = "2022-10-29"+'T'+timeToNotify+":00";
         System.out.println(dateandtime);
@@ -269,7 +279,7 @@ public class AddBreaksPage extends AppCompatDialogFragment {
     }
 
     public interface  AddBreaksPageListener {
-        void saveBreaksData(String break_title,int year,int month,int day,int hr,int min, String am_pm);
+        void saveBreaksData(String break_title, int year, int month, int day, int hr, int min, int requestCode, String am_pm);
 
     }
 }

@@ -5,11 +5,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -31,6 +29,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String BREAK_NAME = "BREAK_NAME";
     private static final String BREAK_DATE = "BREAK_DATE";
     private static final String BREAK_TIME = "BREAK_TIME";
+    private static final String BREAK_REQUEST_CODE = "BREAK_REQUEST_CODE";
     private final Context context;
 
 
@@ -43,7 +42,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE IF NOT EXISTS "+TABLE_NAME + "(ID INTEGER PRIMARY KEY AUTOINCREMENT , USERNAME TEXT , EMAIL TEXT , PASSWORD TEXT )");
-        db.execSQL("CREATE TABLE IF NOT EXISTS "+BREAKS_TABLE + "(BREAK_ID INTEGER PRIMARY KEY AUTOINCREMENT , BREAK_NAME TEXT , BREAK_DATE TEXT , BREAK_TIME TEXT )");
+        db.execSQL("CREATE TABLE IF NOT EXISTS "+BREAKS_TABLE + "(BREAK_ID INTEGER PRIMARY KEY AUTOINCREMENT , BREAK_NAME TEXT , BREAK_DATE TEXT , BREAK_TIME TEXT, BREAK_REQUEST_CODE INTEGER)");
     }
 
     @Override
@@ -117,12 +116,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return "";
     }
 
-    public void addBreak(String breakName, String breakDate, String breakTime){
+    public void addBreak(String breakName, String breakDate, String breakTime, int requestCode){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(BREAK_NAME,breakName);
         values.put(BREAK_DATE,breakDate);
         values.put(BREAK_TIME,breakTime);
+        values.put(BREAK_REQUEST_CODE,requestCode);
 
         long result = db.insert(BREAKS_TABLE, null, values);
 
@@ -145,12 +145,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return cursor;
 
     }
-    public void updateBreak(String breakID, String breakName, String breakDate, String breakTime){
+    public void updateBreak(String breakID, String breakName, String breakDate, String breakTime, int requestCode){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(BREAK_NAME,breakName);
         values.put(BREAK_DATE,breakDate);
         values.put(BREAK_TIME,breakTime);
+        values.put(BREAK_REQUEST_CODE,requestCode);
         long result = db.update(BREAKS_TABLE,values,"BREAK_ID =?", new String[]{breakID});
         if(result == -1){
             Toast.makeText(context,"error while updating break", Toast.LENGTH_SHORT).show();

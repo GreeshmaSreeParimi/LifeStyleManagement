@@ -49,7 +49,7 @@ public class BreaksPage extends AppCompatActivity implements AddBreaksPage.AddBr
             Toast.makeText(this.getApplicationContext(),"No Breaks data to display", Toast.LENGTH_SHORT).show();
         }else {
             while(cursor.moveToNext()){
-                Breaks_Storage_ModelArrayList.add(new Breaks_Storage_Model(cursor.getString(0),cursor.getString(1), cursor.getString(2),cursor.getString(3)));
+                Breaks_Storage_ModelArrayList.add(new Breaks_Storage_Model(cursor.getString(0),cursor.getString(1), cursor.getString(2),cursor.getString(3), cursor.getInt(4)));
             }
         }
 
@@ -86,14 +86,14 @@ public class BreaksPage extends AppCompatActivity implements AddBreaksPage.AddBr
     }
 
     @Override
-    public void saveBreaksData(String break_title,int year,int month,int day,int hour,int min,String am_pm) {
+    public void saveBreaksData(String break_title,int year,int month,int day,int hour,int min, int requestCode, String am_pm) {
         // This data will be received from add breaks dialog
 
         String date = year + "-" + month + "-" +day;
         String time = hour + ":" + min + " " +am_pm;
 
         databasehelper = new DatabaseHelper(BreaksPage.this);
-        databasehelper.addBreak(break_title,date,time);
+        databasehelper.addBreak(break_title,date,time,requestCode);
 
         Cursor cursor = databasehelper.getALlBreaksData();
         Breaks_Storage_ModelArrayList = new ArrayList<Breaks_Storage_Model>();
@@ -101,8 +101,8 @@ public class BreaksPage extends AppCompatActivity implements AddBreaksPage.AddBr
             Toast.makeText(this.getApplicationContext(),"No Breaks data to display", Toast.LENGTH_SHORT).show();
         }else {
             while(cursor.moveToNext()){
-                Log.println(Log.ERROR,"DB_DATA",cursor.getString(1));
-                Breaks_Storage_ModelArrayList.add(new Breaks_Storage_Model(cursor.getString(0),cursor.getString(1), cursor.getString(2),cursor.getString(3)));
+                Log.println(Log.INFO,"DB_DATA",cursor.getString(1));
+                Breaks_Storage_ModelArrayList.add(new Breaks_Storage_Model(cursor.getString(0),cursor.getString(1), cursor.getString(2),cursor.getString(3),cursor.getInt(4)));
             }
         }
         breakAdapter = new BreakAdapter(this, Breaks_Storage_ModelArrayList);
@@ -111,14 +111,26 @@ public class BreaksPage extends AppCompatActivity implements AddBreaksPage.AddBr
     }
 
     @Override
-    public void updateBreaksData(String break_title,int year,int month,int day,int hour,int min,String am_pm, int position,String breakID){
+    public void updateBreaksData(String break_title,String date,String time, int position,int requestCode, String breakID){
 
-        String date = year + "-" + month + "-" +day;
-        String time = hour + ":" + min + " " +am_pm;
+//        String date = year + "-" + month + "-" +day;
+//        String time = hour + ":" + min + " " +am_pm;
 
-        Breaks_Storage_ModelArrayList.set(position,new Breaks_Storage_Model(breakID,break_title, time, date));
+        Breaks_Storage_ModelArrayList.set(position,new Breaks_Storage_Model(breakID,break_title, time, date, requestCode));
         databasehelper = new DatabaseHelper(BreaksPage.this);
-        databasehelper.updateBreak(breakID,break_title,date,time);
+        databasehelper.updateBreak(breakID,break_title,date,time,requestCode);
+
+        Cursor cursor = databasehelper.getALlBreaksData();
+        Breaks_Storage_ModelArrayList = new ArrayList<Breaks_Storage_Model>();
+        if(cursor.getCount() == 0){
+            Toast.makeText(this.getApplicationContext(),"No Breaks data to display", Toast.LENGTH_SHORT).show();
+        }else {
+            while(cursor.moveToNext()){
+                Log.println(Log.INFO,"DB_DATA",cursor.getString(1));
+                Breaks_Storage_ModelArrayList.add(new Breaks_Storage_Model(cursor.getString(0),cursor.getString(1), cursor.getString(2),cursor.getString(3),cursor.getInt(4)));
+            }
+        }
+
         breakRV.getAdapter().notifyItemChanged(position);
 
         breakAdapter = new BreakAdapter(this, Breaks_Storage_ModelArrayList);

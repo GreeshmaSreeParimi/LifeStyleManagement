@@ -57,6 +57,7 @@ public class BreakAdapter extends RecyclerView.Adapter<BreakAdapter.ViewHolder> 
                 b.putString("Break_Name",model.getBreak_name());
                 b.putString("Break_date",model.getBreak_date());
                 b.putString("Break_time",model.getBreak_time());
+                b.putInt("Break_requestCode",model.getBreak_requestCode());
                 System.out.println("model"+model.getBreak_time());
 
 

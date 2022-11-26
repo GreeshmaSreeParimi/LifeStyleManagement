@@ -18,6 +18,7 @@ public class GenerateNotification extends AppCompatActivity {
         textView=findViewById(R.id.message);
         Bundle bundle=getIntent().getExtras();
         textView.setText(bundle.getString("message"));
+        System.out.println("GET EXTRA "+bundle.getString("message"));
         dismiss= (Button)findViewById(R.id.flashButton);
         dismiss.setOnClickListener(new View.OnClickListener() {
             @Override
