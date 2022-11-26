@@ -27,14 +27,15 @@ public class MainActivity extends AppCompatActivity {
         loginPassword = findViewById(R.id.password);
         login = (Button) findViewById(R.id.login);
 
-        sp = getSharedPreferences("login",MODE_PRIVATE);
-        if(sp.getBoolean("logged",true)){
-            startActivity(new Intent(MainActivity.this , LandingPage.class));
+        sp = getSharedPreferences("login" , MODE_PRIVATE);
+        boolean hasLoggedIn = sp.getBoolean("logged",true);
+        if(hasLoggedIn){
+            myDb = new DatabaseHelper(this);
+            loginUser();
         }
         else
         {
-            myDb = new DatabaseHelper(this);
-            loginUser();
+            startActivity(new Intent(MainActivity.this , LandingPage.class));
         }
 
 
@@ -48,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        configureSkipAcc();
+//        configureSkipAcc();
 
     }
 
@@ -67,7 +68,10 @@ public class MainActivity extends AppCompatActivity {
                 else{
                     boolean var = myDb.checkUser(loginUsername.getText().toString() , loginPassword.getText().toString());
                     if (var){
-                        sp.edit().putBoolean("logged",true).apply();
+                        sp = getSharedPreferences("login", MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sp.edit();
+                        editor.putBoolean("logged", false); // set it to false when the user is logged out
+                        editor.apply();
                         Toast.makeText(MainActivity.this, "Login SuccessfulL", Toast.LENGTH_SHORT).show();
                         startActivity(new Intent(MainActivity.this , LandingPage.class));
                         finish();
@@ -79,15 +83,15 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
-    private void configureSkipAcc()
-    {
-        TextView skip = (TextView) findViewById(R.id.skip);
-        skip.setOnClickListener((new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this, LandingPage.class));
-            }
-        }));
-    }
+//    private void configureSkipAcc()
+//    {
+//        TextView skip = (TextView) findViewById(R.id.skip);
+//        skip.setOnClickListener((new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                startActivity(new Intent(MainActivity.this, LandingPage.class));
+//            }
+//        }));
+//    }
 
 }
