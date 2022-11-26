@@ -159,5 +159,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             Toast.makeText(context,"Break updated successfully", Toast.LENGTH_SHORT).show();
         }
     }
+    public void deleteBreak(String breakID){
+        SQLiteDatabase db = this.getWritableDatabase();
+        long result = db.delete(BREAKS_TABLE,"BREAK_ID =?", new String[]{breakID});
+        if(result == -1){
+            Toast.makeText(context,"error while deleting break", Toast.LENGTH_SHORT).show();
+        }else{
+            Toast.makeText(context,"Break deleted successfully", Toast.LENGTH_SHORT).show();
+        }
+    }
 
 }

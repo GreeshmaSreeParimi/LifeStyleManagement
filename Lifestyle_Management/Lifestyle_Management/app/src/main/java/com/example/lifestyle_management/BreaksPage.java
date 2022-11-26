@@ -138,6 +138,23 @@ public class BreaksPage extends AppCompatActivity implements AddBreaksPage.AddBr
 
 
     }
+    @Override
+    public  void deleteBreaksData(){
+        databasehelper = new DatabaseHelper(BreaksPage.this);
 
+        Cursor cursor = databasehelper.getALlBreaksData();
+        Breaks_Storage_ModelArrayList = new ArrayList<Breaks_Storage_Model>();
+        if(cursor.getCount() == 0){
+            Toast.makeText(this.getApplicationContext(),"No Breaks data to display", Toast.LENGTH_SHORT).show();
+        }else {
+            while(cursor.moveToNext()){
+                Log.println(Log.INFO,"DB_DATA",cursor.getString(1));
+                Breaks_Storage_ModelArrayList.add(new Breaks_Storage_Model(cursor.getString(0),cursor.getString(1), cursor.getString(2),cursor.getString(3),cursor.getInt(4)));
+            }
+        }
+        breakAdapter = new BreakAdapter(this, Breaks_Storage_ModelArrayList);
+        breakRV.setAdapter(breakAdapter);
+
+    }
 
 }

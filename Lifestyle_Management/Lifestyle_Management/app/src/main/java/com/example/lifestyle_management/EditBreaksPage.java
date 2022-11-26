@@ -19,6 +19,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
@@ -35,10 +36,13 @@ public class EditBreaksPage extends AppCompatDialogFragment {
     private EditBreaksPage.EditBreaksPageListener listener;
     private DatePickerDialog datePickerDialog;
     private String picked_am_pm,title,date,time;
+    private AlertDialog.Builder builder;
+    private  AlertDialog dialog;
 
 
     EditText editTitle;
     Button dateButton, timeButton;
+    ImageView deleteButton;
     //String timeToNotify;
    // private int picked_day, picked_month, picked_year,picked_hour,picked_minute;
 
@@ -46,10 +50,10 @@ public class EditBreaksPage extends AppCompatDialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.edit_break_dialog,null);
-        builder.setView(dialogView).setTitle("Edit Information")
+        builder.setView(dialogView).setTitle("Edit/Delete Breaks")
                 .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -120,6 +124,7 @@ public class EditBreaksPage extends AppCompatDialogFragment {
         editTitle=(EditText)dialogView.findViewById(R.id.editTitle) ;
         dateButton=(Button)dialogView.findViewById(R.id.btnDate);
         timeButton=(Button)dialogView.findViewById(R.id.btnTime);
+        deleteButton= (ImageView) dialogView.findViewById(R.id.delete_btn);
         editTitle.setText(Break_Name);
         dateButton.setText(Break_date);
         timeButton.setText(Break_time);
@@ -139,12 +144,27 @@ public class EditBreaksPage extends AppCompatDialogFragment {
                 selectTime();
             }
         });
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                deleteBreak();
+            }
+        });
         if(savedInstanceState != null){
             editTitle.setText(savedInstanceState.getString("break_title", Break_Name));
             dateButton.setText(savedInstanceState.getString("break_date", Break_date));
             timeButton.setText(savedInstanceState.getString("break_time", Break_time));
         }
-        return builder.create();
+        dialog = builder.create();
+        return dialog;
+    }
+
+    private void deleteBreak() {
+        String break_ID = getArguments().getString("Break_ID");
+        DatabaseHelper db = new DatabaseHelper(this.getContext());
+        db.deleteBreak(break_ID);
+        dialog.cancel();
+        listener.deleteBreaksData();
     }
 
 
@@ -293,6 +313,7 @@ public class EditBreaksPage extends AppCompatDialogFragment {
     public interface  EditBreaksPageListener {
         void updateBreaksData(String title,String date,String time,int i,int requestCode,String break_ID);
 
+        void deleteBreaksData();
     }
 }
 

@@ -49,7 +49,7 @@ public class AddBreaksPage extends AppCompatDialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.add_breaks_dialog,null);
-        builder.setView(dialogView).setTitle("Add Information")
+        builder.setView(dialogView).setTitle("Add Breaks")
                 .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
