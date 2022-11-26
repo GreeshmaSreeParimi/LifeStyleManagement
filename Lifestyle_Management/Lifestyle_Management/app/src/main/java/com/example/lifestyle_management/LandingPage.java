@@ -62,11 +62,11 @@ public class LandingPage extends AppCompatActivity {
     public void onBackPressed() {
         SharedPreferences sharedPreferences = getSharedPreferences("login",MODE_PRIVATE);
         if (sharedPreferences.getBoolean("logged", true)) {
-            moveTaskToBack(true);
+            finish();
         }
         else
         {
-            finish();
+            moveTaskToBack(true);
         }
 
     }
