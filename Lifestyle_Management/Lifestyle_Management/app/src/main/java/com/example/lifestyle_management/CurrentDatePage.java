@@ -6,7 +6,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import android.widget.Button;
@@ -27,6 +29,7 @@ public class CurrentDatePage extends AppCompatActivity {
     ArrayList<Breaks_Storage_Model> Breaks_Storage_ModelArrayList;
     ArrayList<Task_Storage_Model> Task_Storage_ModelArrayList;
     RecyclerView taskRV;
+    DatabaseHelper databasehelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,34 +38,44 @@ public class CurrentDatePage extends AppCompatActivity {
 
         taskRV = findViewById(R.id.idTasks);
         Breaks_Storage_ModelArrayList = new ArrayList<Breaks_Storage_Model>();
-
-        // Here, we have created new array list and added data to it
-        SharedPreferences.Editor editor = getSharedPreferences("breaks_data", MODE_PRIVATE).edit();
-        SharedPreferences sharedPreferences = getSharedPreferences("breaks_data", MODE_PRIVATE);
-        String breaks_data = sharedPreferences.getString("breaks_list", null);
-        Type type = new TypeToken<ArrayList<Breaks_Storage_Model>>() {
-
-        }.getType();
-        Gson gson = new Gson();
-        Breaks_Storage_ModelArrayList = (breaks_data == null) ? Breaks_Storage_ModelArrayList : gson.fromJson(breaks_data, type);
-        int size = Breaks_Storage_ModelArrayList.size();
-        System.out.println(Breaks_Storage_ModelArrayList);
-        String currentDate = new SimpleDateFormat("MM-dd-yyyy", Locale.getDefault()).format(new Date());
+        databasehelper = new DatabaseHelper(this);
+        String currentDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
         Task_Storage_ModelArrayList = new ArrayList<Task_Storage_Model>();
 
-        for(int i=0; i<size;i++)
-        {
-        if(Breaks_Storage_ModelArrayList.get(i).getBreak_date().equals(currentDate))
-            {
-                String task_name = Breaks_Storage_ModelArrayList.get(i).getBreak_name();
-                String task_time = Breaks_Storage_ModelArrayList.get(i).getBreak_time();
-                String task_date = Breaks_Storage_ModelArrayList.get(i).getBreak_date();
-                Task_Storage_ModelArrayList.add(new Task_Storage_Model(task_name, task_time,task_date));
+        Cursor cursor = databasehelper.getALlBreaksData();
+        if(cursor.getCount() == 0){
+            Toast.makeText(this.getApplicationContext(),"No tasks for today", Toast.LENGTH_SHORT).show();
+        }else {
+            while(cursor.moveToNext()){
+                Breaks_Storage_ModelArrayList.add(new Breaks_Storage_Model(cursor.getString(0),cursor.getString(1), cursor.getString(2),cursor.getString(3),cursor.getInt(4)));
             }
-        }
-        // we are initializing our adapter class and passing our arraylist to it.
-        taskAdapter = new TodayTaskAdapter(this, Task_Storage_ModelArrayList);
 
+            int size = Breaks_Storage_ModelArrayList.size();
+
+            for(int i=0; i<size;i++)
+            {
+                System.out.println(Breaks_Storage_ModelArrayList.get(i).getBreak_date());
+                if(Breaks_Storage_ModelArrayList.get(i).getBreak_date().equals(currentDate))
+                {
+                    String task_name = Breaks_Storage_ModelArrayList.get(i).getBreak_name();
+                    String task_time = Breaks_Storage_ModelArrayList.get(i).getBreak_time();
+                    String task_date = Breaks_Storage_ModelArrayList.get(i).getBreak_date();
+                    Task_Storage_ModelArrayList.add(new Task_Storage_Model(task_name, task_time,task_date));
+                }
+            }
+
+        }
+
+        // we are initializing our adapter class and passing our arraylist to it.
+        if(Task_Storage_ModelArrayList.size() != 0) {
+            taskAdapter = new TodayTaskAdapter(this, Task_Storage_ModelArrayList);
+        }
+        else
+        {
+            Task_Storage_ModelArrayList.add(new Task_Storage_Model("No Tasks For Today", null ,null));
+            taskAdapter = new TodayTaskAdapter(this, Task_Storage_ModelArrayList);
+            Toast.makeText(this.getApplicationContext(),"No tasks for today", Toast.LENGTH_SHORT).show();
+        }
         // below line is for setting a layout manager for our recycler view.
         // here we are creating vertical list so we will provide orientation as vertical
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
@@ -71,10 +84,6 @@ public class CurrentDatePage extends AppCompatActivity {
         taskRV.setLayoutManager(linearLayoutManager);
         taskRV.setAdapter(taskAdapter);
 
-        if(Task_Storage_ModelArrayList == null)
-        {
-            Toast.makeText(getApplicationContext(), "No tasks for today", Toast.LENGTH_LONG).show();
-        }
     }
 
 
