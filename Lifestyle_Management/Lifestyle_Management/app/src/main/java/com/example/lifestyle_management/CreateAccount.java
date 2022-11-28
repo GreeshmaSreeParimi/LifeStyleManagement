@@ -45,6 +45,7 @@ public class CreateAccount extends AppCompatActivity {
                     boolean var = myDB.registerUser(email.getText().toString(), email.getText().toString(), password.getText().toString());
                     if (var) {
                         Toast.makeText(CreateAccount.this, "User Registered Successfully !!", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(CreateAccount.this , MainActivity.class));
                     } else
                         Toast.makeText(CreateAccount.this, "User Already Exists !!", Toast.LENGTH_SHORT).show();
                     }
