@@ -27,9 +27,9 @@ public class LandingPage extends AppCompatActivity {
         boolean doesTableExist = databasehelper.doesTableExist("BREAKS_TABLE");
         if(!doesTableExist){
             databasehelper.createBreaksTable();
-            databasehelper.addBreak("Work Break", "2022-12-1","2:30 pm", 121);
-            databasehelper.addBreak("Gym Break", "2022-12-9","6:30 am", 162);
-            databasehelper.addBreak("Water Break", "2022-11-30","11:30 am", 741);
+            databasehelper.addBreak("Work Break", "2022-12-1","2:30 pm", 121,1);
+            databasehelper.addBreak("Gym Break", "2022-12-9","6:30 am", 162,0);
+            databasehelper.addBreak("Water Break", "2022-11-30","11:30 am", 741,1);
        }
 
         date_card.setOnClickListener(new View.OnClickListener() {

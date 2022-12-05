@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -44,6 +46,10 @@ public class BreakAdapter extends RecyclerView.Adapter<BreakAdapter.ViewHolder> 
         // to set data to textview and imageview of each card layout
         Breaks_Storage_Model model = Breaks_Storage_ModelArrayList.get(position);
         holder.BreakNameTV.setText(model.getBreak_name());
+        int isAlertOn= model.isAlertOn();
+        if(isAlertOn == 1 ) holder.IsBreakALertOn.setChecked(true);
+        else holder.IsBreakALertOn.setChecked(false);
+
 //        holder.BreakTimeTV.setText("" + model.getBreak_time());
         holder.itemView.setOnClickListener(new View.OnClickListener()
         {
@@ -58,25 +64,10 @@ public class BreakAdapter extends RecyclerView.Adapter<BreakAdapter.ViewHolder> 
                 b.putString("Break_date",model.getBreak_date());
                 b.putString("Break_time",model.getBreak_time());
                 b.putInt("Break_requestCode",model.getBreak_requestCode());
+                b.putInt("Break_Alarm_On",model.isAlertOn());
                 System.out.println("model"+model.getBreak_time());
 
-
-//                newFragment.setArguments(b);
-//                newFragment.show(getSupportFragmentManager(), "add_a_member")
-//
-//                //get text for current item
-//            //put text into a bundle and add to intent
-//                intent.putExtra("BreakName", model.getBreak_name());
-//
-//                //get position to carry integer
-//                //intent.putExtra("position", itemPosition);
-//
-//                intent.putExtras(b);
-//
-//                //begin activity
-//                view.getContext().startActivity(intent);
                 EditBreaksPage editBreaksPage = new EditBreaksPage();
-//                editBreaksPage.show(getSupportFragmentManager(), "Edit Breaks");
                 editBreaksPage.setArguments(b);
                 FragmentManager fragmentManager = ((AppCompatActivity) layoutInflater.getContext()).getSupportFragmentManager();
                 editBreaksPage.show(fragmentManager, "Edit Breaks");
@@ -84,6 +75,18 @@ public class BreakAdapter extends RecyclerView.Adapter<BreakAdapter.ViewHolder> 
 
             }
         });
+
+        holder.IsBreakALertOn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(context instanceof BreaksPage ){
+                    int isAlertOn = isChecked ? 1 :0;
+                    ((BreaksPage)context).updateBreaksData(model.getBreak_name(),
+                            model.getBreak_date(),
+                            model.getBreak_time(),holder.getAdapterPosition(),model.getBreak_requestCode(),model.getBreak_ID(),isAlertOn);
+                }
+            }
+        }
+        );
     }
 
 
@@ -97,6 +100,7 @@ public class BreakAdapter extends RecyclerView.Adapter<BreakAdapter.ViewHolder> 
     // View holder class for initializing of your views such as TextView and Imageview
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private final TextView BreakNameTV;
+        private final Switch IsBreakALertOn;
   //      private final TextView BreakTimeTV;
 
         public ViewHolder(@NonNull View itemView) {
@@ -110,6 +114,7 @@ public class BreakAdapter extends RecyclerView.Adapter<BreakAdapter.ViewHolder> 
                 }
             });
             BreakNameTV = itemView.findViewById(R.id.idTVBreakName);
+            IsBreakALertOn = itemView.findViewById(R.id.switch1);
  //           BreakTimeTV = itemView.findViewById(R.id.idTVBreakTime);
 
         }

@@ -47,7 +47,7 @@ public class CurrentDatePage extends AppCompatActivity {
             Toast.makeText(this.getApplicationContext(),"No tasks for today", Toast.LENGTH_SHORT).show();
         }else {
             while(cursor.moveToNext()){
-                Breaks_Storage_ModelArrayList.add(new Breaks_Storage_Model(cursor.getString(0),cursor.getString(1), cursor.getString(2),cursor.getString(3),cursor.getInt(4)));
+                Breaks_Storage_ModelArrayList.add(new Breaks_Storage_Model(cursor.getString(0),cursor.getString(1), cursor.getString(2),cursor.getString(3),cursor.getInt(4), cursor.getInt(5)));
             }
 
             int size = Breaks_Storage_ModelArrayList.size();

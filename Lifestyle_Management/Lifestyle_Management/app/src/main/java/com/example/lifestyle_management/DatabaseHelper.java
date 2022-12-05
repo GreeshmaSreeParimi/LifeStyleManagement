@@ -30,6 +30,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String BREAK_DATE = "BREAK_DATE";
     private static final String BREAK_TIME = "BREAK_TIME";
     private static final String BREAK_REQUEST_CODE = "BREAK_REQUEST_CODE";
+    private static final String BREAK_ALERT_ON = "BREAK_ALERT_ON";
     private final Context context;
 
 
@@ -129,16 +130,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public void createBreaksTable(){
         SQLiteDatabase db = this.getWritableDatabase();
-        db.execSQL("CREATE TABLE IF NOT EXISTS "+BREAKS_TABLE + "(BREAK_ID INTEGER PRIMARY KEY AUTOINCREMENT , BREAK_NAME TEXT , BREAK_DATE TEXT , BREAK_TIME TEXT, BREAK_REQUEST_CODE INTEGER)");
+        db.execSQL("CREATE TABLE IF NOT EXISTS "+BREAKS_TABLE + "(BREAK_ID INTEGER PRIMARY KEY AUTOINCREMENT , BREAK_NAME TEXT , BREAK_DATE TEXT , BREAK_TIME TEXT, BREAK_REQUEST_CODE INTEGER,BREAK_ALERT_ON BOOLEAN)");
     }
 
-    public void addBreak(String breakName, String breakDate, String breakTime, int requestCode){
+    public void addBreak(String breakName, String breakDate, String breakTime, int requestCode,int isAlertOn){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(BREAK_NAME,breakName);
         values.put(BREAK_DATE,breakDate);
         values.put(BREAK_TIME,breakTime);
         values.put(BREAK_REQUEST_CODE,requestCode);
+        values.put(BREAK_ALERT_ON,isAlertOn);
 
         long result = db.insert(BREAKS_TABLE, null, values);
 
@@ -159,13 +161,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return cursor;
 
     }
-    public void updateBreak(String breakID, String breakName, String breakDate, String breakTime, int requestCode){
+    public void updateBreak(String breakID, String breakName, String breakDate, String breakTime, int requestCode, int isAlertOn){
+        System.out.println("BreakDateUpdation " + breakName + isAlertOn);
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(BREAK_NAME,breakName);
         values.put(BREAK_DATE,breakDate);
         values.put(BREAK_TIME,breakTime);
         values.put(BREAK_REQUEST_CODE,requestCode);
+        values.put(BREAK_ALERT_ON,isAlertOn);
+
         long result = db.update(BREAKS_TABLE,values,"BREAK_ID =?", new String[]{breakID});
         if(result == -1){
             Toast.makeText(context,"error while updating break", Toast.LENGTH_SHORT).show();

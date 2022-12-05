@@ -118,7 +118,8 @@ public class AddBreaksPage extends AppCompatDialogFragment {
                             setAlarm(getContext(),title, date, time);
                             Toast.makeText(getContext(), "Alarm set for selected date and time", Toast.LENGTH_SHORT).show();
                             listener.saveBreaksData(title,date,time,requestCode);
-                            dialog.dismiss();
+                            dialog.cancel();
+                            // dialog.dismiss();
                         }
                     }
                 });

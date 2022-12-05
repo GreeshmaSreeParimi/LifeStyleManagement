@@ -79,6 +79,7 @@ public class EditBreaksPage extends AppCompatDialogFragment {
 
                         int position=getArguments().getInt("position");
                         int requestCode = getArguments().getInt("Break_requestCode");
+                        int isBreakAlertOn = getArguments().getInt("Break_Alarm_On");
                         String break_ID = getArguments().getString("Break_ID");
                         System.out.println("Edit submit on click:"+time);
 
@@ -110,7 +111,7 @@ public class EditBreaksPage extends AppCompatDialogFragment {
                             Toast.makeText(getContext(), "Alarm set for selected date and time", Toast.LENGTH_SHORT).show();
 
                         }
-                        listener.updateBreaksData(title,date,out_time,position,requestCode,break_ID);
+                        listener.updateBreaksData(title,date,out_time,position,requestCode,break_ID,isBreakAlertOn);
                     }
 
                 });
@@ -311,7 +312,7 @@ public class EditBreaksPage extends AppCompatDialogFragment {
     }
 
     public interface  EditBreaksPageListener {
-        void updateBreaksData(String title,String date,String time,int i,int requestCode,String break_ID);
+        void updateBreaksData(String title,String date,String time,int i,int requestCode,String break_ID,int isAlertOn);
 
         void deleteBreaksData();
     }
