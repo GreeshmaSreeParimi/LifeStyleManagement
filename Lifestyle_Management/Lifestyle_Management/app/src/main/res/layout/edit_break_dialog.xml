@@ -31,12 +31,13 @@
 
     <ImageView
         android:id="@+id/delete_btn"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
+        android:layout_width="25dp"
+        android:layout_height="21dp"
+        android:layout_marginTop="10dp"
         android:src="@drawable/ic_baseline_delete_24"
         app:layout_constraintBottom_toTopOf="@+id/add_break"
         app:layout_constraintEnd_toStartOf="@+id/guideline10"
-        app:layout_constraintHorizontal_bias="0.902"
+        app:layout_constraintHorizontal_bias="0.952"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

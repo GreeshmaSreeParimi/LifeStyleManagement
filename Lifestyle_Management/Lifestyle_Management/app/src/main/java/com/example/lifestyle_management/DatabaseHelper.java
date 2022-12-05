@@ -42,7 +42,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE IF NOT EXISTS "+TABLE_NAME + "(ID INTEGER PRIMARY KEY AUTOINCREMENT , USERNAME TEXT , EMAIL TEXT , PASSWORD TEXT )");
-        db.execSQL("CREATE TABLE IF NOT EXISTS "+BREAKS_TABLE + "(BREAK_ID INTEGER PRIMARY KEY AUTOINCREMENT , BREAK_NAME TEXT , BREAK_DATE TEXT , BREAK_TIME TEXT, BREAK_REQUEST_CODE INTEGER)");
+
     }
 
     @Override
@@ -115,6 +115,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         return "";
     }
+    public boolean doesTableExist(String tableName) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT name FROM sqlite_master WHERE type='table' AND name='" + tableName + "'",null);
+
+        if (cursor.getCount() > 0){
+            cursor.close();
+            return true;
+        }
+        cursor.close();
+        return false;
+    }
+
+    public void createBreaksTable(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("CREATE TABLE IF NOT EXISTS "+BREAKS_TABLE + "(BREAK_ID INTEGER PRIMARY KEY AUTOINCREMENT , BREAK_NAME TEXT , BREAK_DATE TEXT , BREAK_TIME TEXT, BREAK_REQUEST_CODE INTEGER)");
+    }
 
     public void addBreak(String breakName, String breakDate, String breakTime, int requestCode){
         SQLiteDatabase db = this.getWritableDatabase();
@@ -128,8 +144,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         if(result == -1){
             Toast.makeText(context,"error while adding break", Toast.LENGTH_SHORT).show();
-        }else{
-            Toast.makeText(context,"Break added successfully", Toast.LENGTH_SHORT).show();
         }
     }
 

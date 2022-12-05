@@ -24,9 +24,9 @@ public class LandingPage extends AppCompatActivity {
         break_card = findViewById(R.id.breaks_card);
 
         DatabaseHelper databasehelper = new DatabaseHelper(LandingPage.this);
-        Cursor cursor = databasehelper.getALlBreaksData();
-        if(cursor.getCount() == 0){
-            Log.println(Log.ERROR,"DB_DATA","Cursor1 "+ cursor.getCount());
+        boolean doesTableExist = databasehelper.doesTableExist("BREAKS_TABLE");
+        if(!doesTableExist){
+            databasehelper.createBreaksTable();
             databasehelper.addBreak("Work Break", "2022-12-1","2:30 pm", 121);
             databasehelper.addBreak("Gym Break", "2022-12-9","6:30 am", 162);
             databasehelper.addBreak("Water Break", "2022-11-30","11:30 am", 741);

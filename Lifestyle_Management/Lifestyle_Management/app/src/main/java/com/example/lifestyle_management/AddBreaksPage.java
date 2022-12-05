@@ -42,6 +42,7 @@ public class AddBreaksPage extends AppCompatDialogFragment {
     private static String DATA_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
     private static char TIME_FORMATTER = 'T';
     String timeToNotify;
+    private  AlertDialog dialog;
 
     @NonNull
     @Override
@@ -50,42 +51,14 @@ public class AddBreaksPage extends AppCompatDialogFragment {
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.add_breaks_dialog,null);
         builder.setView(dialogView).setTitle("Add Breaks")
-                .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                .setNegativeButton("cancel",
+                        new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
 
                     }
                 })
-                .setPositiveButton("Submit", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        String title = break_title.getText().toString().trim();                               //access the data from the input field
-                        String date = date_picker_btn.getText().toString().trim();                                 //access the date from the choose date button
-                        String time = time_picker_btn.getText().toString().trim();
-                        if (title.isEmpty()) {
-                            Toast.makeText(getContext(), "Please Enter text", Toast.LENGTH_SHORT).show();
-                            //shows the toast if input field is empty
-                        }
-                        else if(date.equals("date") && time.equals("time")){
-                            //shows toast if date and time are not selected
-                            Toast.makeText(getContext(), "Please select date and time", Toast.LENGTH_SHORT).show();
-                        }
-                        else if(time.equals("time") && !date.equals("date")){
-                            Toast.makeText(getContext(), "Please select time", Toast.LENGTH_SHORT).show();
-
-                        }
-                        else if(!time.equals("time") && date.equals("date")){
-                            Toast.makeText(getContext(), "Please select date", Toast.LENGTH_SHORT).show();
-                        }
-                        else {
-                            setAlarm(getContext(),title, date, time);
-                            Toast.makeText(getContext(), "Alarm set for selected date and time", Toast.LENGTH_SHORT).show();
-
-                        }
-                        listener.saveBreaksData(title,picked_year,picked_month,picked_day,picked_hour,picked_minute,requestCode,picked_am_pm);
-                    }
-
-                });
+               .setPositiveButton("Submit", null);
 
         initDatePicker(dialogView);
         break_title = (EditText) dialogView.findViewById(R.id.break_title);
@@ -108,9 +81,52 @@ public class AddBreaksPage extends AppCompatDialogFragment {
             date_picker_btn.setText(savedInstanceState.getString("break_date", "Select date"));
             time_picker_btn.setText(savedInstanceState.getString("break_time", "Select time"));
         }
+        dialog = builder.create();
+
+        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+
+            @Override
+            public void onShow(DialogInterface dialogInterface) {
+
+                Button button = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
+                button.setOnClickListener(new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View view) {
+                        // TODO Do something
+
+                        //Dismiss once everything is OK.
+                        String title = break_title.getText().toString().trim();                               //access the data from the input field
+                        String date = date_picker_btn.getText().toString().trim();                                 //access the date from the choose date button
+                        String time = time_picker_btn.getText().toString().trim();
+                        if (title.isEmpty()) {
+                            Toast.makeText(getContext(), "Please Enter text", Toast.LENGTH_SHORT).show();
+                            //shows the toast if input field is empty
+                        }
+                        else if(date.equals("Select Date") && time.equals("Select Time")){
+                            //shows toast if date and time are not selected
+                            Toast.makeText(getContext(), "Please select date and time", Toast.LENGTH_SHORT).show();
+                        }
+                        else if(time.equals("Select Time") && !date.equals("Select Date")){
+                            Toast.makeText(getContext(), "Please select time", Toast.LENGTH_SHORT).show();
+
+                        }
+                        else if(!time.equals("Select Time") && date.equals("Select Date")){
+                            Toast.makeText(getContext(), "Please select date", Toast.LENGTH_SHORT).show();
+                        }
+                        else {
+                            setAlarm(getContext(),title, date, time);
+                            Toast.makeText(getContext(), "Alarm set for selected date and time", Toast.LENGTH_SHORT).show();
+                            listener.saveBreaksData(title,date,time,requestCode);
+                            dialog.dismiss();
+                        }
+                    }
+                });
+            }
+        });
 
 
-        return builder.create();
+        return dialog;
 
     }
 
@@ -279,7 +295,7 @@ public class AddBreaksPage extends AppCompatDialogFragment {
     }
 
     public interface  AddBreaksPageListener {
-        void saveBreaksData(String break_title, int year, int month, int day, int hr, int min, int requestCode, String am_pm);
+        void saveBreaksData(String break_title, String date, String time , int requestCode);
 
     }
 }

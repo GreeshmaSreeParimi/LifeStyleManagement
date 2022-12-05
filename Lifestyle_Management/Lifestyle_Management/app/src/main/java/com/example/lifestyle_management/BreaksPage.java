@@ -75,8 +75,8 @@ public class BreaksPage extends AppCompatActivity implements AddBreaksPage.AddBr
 
 
     private void openAddDialog() {
-        AddBreaksPage addBreaksPage = new AddBreaksPage();
-        addBreaksPage.show(getSupportFragmentManager(), "Add breaks");
+      AddBreaksPage addBreaksPage = new AddBreaksPage();
+      addBreaksPage.show(getSupportFragmentManager(), "Add breaks");
     }
 
     private void editDialog(){
@@ -86,11 +86,11 @@ public class BreaksPage extends AppCompatActivity implements AddBreaksPage.AddBr
     }
 
     @Override
-    public void saveBreaksData(String break_title,int year,int month,int day,int hour,int min, int requestCode, String am_pm) {
+    public void saveBreaksData(String break_title,String date, String time ,int requestCode) {
         // This data will be received from add breaks dialog
-
-        String date = year + "-" + month + "-" +day;
-        String time = hour + ":" + min + " " +am_pm;
+        if(break_title.isEmpty() || date.isEmpty() || time.isEmpty() ){
+            return;
+        }
 
         databasehelper = new DatabaseHelper(BreaksPage.this);
         databasehelper.addBreak(break_title,date,time,requestCode);

@@ -53,7 +53,7 @@ public class EditBreaksPage extends AppCompatDialogFragment {
         builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.edit_break_dialog,null);
-        builder.setView(dialogView).setTitle("Edit/Delete Breaks")
+        builder.setView(dialogView)
                 .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
