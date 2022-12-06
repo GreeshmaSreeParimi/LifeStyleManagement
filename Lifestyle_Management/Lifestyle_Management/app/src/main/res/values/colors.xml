@@ -10,4 +10,6 @@
     <color name="colorPrimary">#000000</color>
     <color name="colorPrimaryDark">#212121</color>
     <color name="colorAccent">#ff6d00</color>
+    <color name="colorGray">#808080</color>
+    <color name="colorSnowWhite">#F5FEFD</color>
 </resources>
