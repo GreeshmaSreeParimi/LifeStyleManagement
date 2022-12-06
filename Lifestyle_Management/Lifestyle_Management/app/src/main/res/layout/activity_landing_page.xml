@@ -8,6 +8,21 @@
     android:textDirection="anyRtl"
     tools:context=".LandingPage">
 
+    <Button
+        android:id="@+id/logOut"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="20dp"
+        android:drawablePadding="10dp"
+        android:fontFamily="sans-serif-medium"
+        android:text="Log Out"
+        android:textColor="@color/colorGray"
+        app:backgroundTint="@color/colorSnowWhite"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.948"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="54dp" />
+
     <GridLayout
         android:id="@+id/gridLayout"
         android:layout_width="0dp"
@@ -90,6 +105,10 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.1" />
 
+    <androidx.constraintlayout.helper.widget.Flow
+        android:id="@+id/flow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
