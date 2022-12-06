@@ -70,7 +70,8 @@ public class MainActivity extends AppCompatActivity {
                     if (var){
                         sp = getSharedPreferences("login", MODE_PRIVATE);
                         SharedPreferences.Editor editor = sp.edit();
-                        editor.putBoolean("logged", false); // set it to false when the user is logged out
+                        editor.putBoolean("logged", false); // set it to false when the user is logged in
+                        editor.putString("Email" , loginUsername.getText().toString());
                         editor.apply();
                         Toast.makeText(MainActivity.this, "Login SuccessfulL", Toast.LENGTH_SHORT).show();
                         startActivity(new Intent(MainActivity.this , LandingPage.class));
@@ -83,15 +84,4 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
-//    private void configureSkipAcc()
-//    {
-//        TextView skip = (TextView) findViewById(R.id.skip);
-//        skip.setOnClickListener((new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                startActivity(new Intent(MainActivity.this, LandingPage.class));
-//            }
-//        }));
-//    }
-
 }
