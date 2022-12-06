@@ -44,8 +44,13 @@ public class CreateAccount extends AppCompatActivity {
                 if(checkData==true) {
                     boolean var = myDB.registerUser(email.getText().toString(), email.getText().toString(), password.getText().toString());
                     if (var) {
-                        Toast.makeText(CreateAccount.this, "User Registered Successfully !!", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(CreateAccount.this , MainActivity.class));
+                         Toast.makeText(CreateAccount.this, "User Registered Successfully !!", Toast.LENGTH_SHORT).show();
+                         boolean doesTableExist = myDB.doesTableExist("BREAKS_TABLE");
+                         if(!doesTableExist) myDB.createBreaksTable();
+                         myDB.addBreak("Work Break", "2022-12-1","2:30 pm", 121,1, email.getText().toString());
+                         myDB.addBreak("Gym Break", "2022-12-9","6:30 am", 162,0,email.getText().toString());
+                         myDB.addBreak("Water Break", "2022-11-30","11:30 am", 741,1,email.getText().toString());
+                         startActivity(new Intent(CreateAccount.this , MainActivity.class));
                     } else
                         Toast.makeText(CreateAccount.this, "User Already Exists !!", Toast.LENGTH_SHORT).show();
                     }

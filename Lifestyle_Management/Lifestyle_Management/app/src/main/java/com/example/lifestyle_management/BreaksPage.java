@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
 
@@ -76,6 +77,9 @@ public class BreaksPage extends AppCompatActivity implements AddBreaksPage.AddBr
 
     private void openAddDialog() {
       AddBreaksPage addBreaksPage = new AddBreaksPage();
+//      Bundle b = new Bundle();
+//      b.putParcelableArrayList("breaks_data", (ArrayList<? extends Parcelable>) Breaks_Storage_ModelArrayList);
+//      addBreaksPage.setArguments(b);
       addBreaksPage.show(getSupportFragmentManager(), "Add breaks");
     }
 
@@ -93,7 +97,7 @@ public class BreaksPage extends AppCompatActivity implements AddBreaksPage.AddBr
         }
 
         databasehelper = new DatabaseHelper(BreaksPage.this);
-        databasehelper.addBreak(break_title,date,time,requestCode,1);
+        databasehelper.addBreak(break_title,date,time,requestCode,1,null);
 
         Cursor cursor = databasehelper.getALlBreaksData();
         Breaks_Storage_ModelArrayList = new ArrayList<Breaks_Storage_Model>();

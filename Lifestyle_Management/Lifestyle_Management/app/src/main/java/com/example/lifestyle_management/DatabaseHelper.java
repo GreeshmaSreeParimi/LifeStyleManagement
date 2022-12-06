@@ -1,7 +1,10 @@
 package com.example.lifestyle_management;
 
+import static android.content.Context.MODE_PRIVATE;
+
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -31,7 +34,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String BREAK_TIME = "BREAK_TIME";
     private static final String BREAK_REQUEST_CODE = "BREAK_REQUEST_CODE";
     private static final String BREAK_ALERT_ON = "BREAK_ALERT_ON";
+    private static final String USER_EMAIL = "USER_EMAIL";
     private final Context context;
+    private SharedPreferences sp;
 
 
     public DatabaseHelper(@Nullable Context context) {
@@ -130,10 +135,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public void createBreaksTable(){
         SQLiteDatabase db = this.getWritableDatabase();
-        db.execSQL("CREATE TABLE IF NOT EXISTS "+BREAKS_TABLE + "(BREAK_ID INTEGER PRIMARY KEY AUTOINCREMENT , BREAK_NAME TEXT , BREAK_DATE TEXT , BREAK_TIME TEXT, BREAK_REQUEST_CODE INTEGER,BREAK_ALERT_ON BOOLEAN)");
+        db.execSQL("CREATE TABLE IF NOT EXISTS "+BREAKS_TABLE + "(BREAK_ID INTEGER PRIMARY KEY AUTOINCREMENT , BREAK_NAME TEXT , BREAK_DATE TEXT , BREAK_TIME TEXT, BREAK_REQUEST_CODE INTEGER,BREAK_ALERT_ON BOOLEAN,USER_EMAIL TEXT)");
     }
 
-    public void addBreak(String breakName, String breakDate, String breakTime, int requestCode,int isAlertOn){
+    public void addBreak(String breakName, String breakDate, String breakTime, int requestCode,int isAlertOn, String email){
+        String  userEmail = email;
+        if(userEmail == null){
+            sp = context.getSharedPreferences("login" , MODE_PRIVATE);
+            userEmail = sp.getString("Email",null);
+        }
+        if(userEmail == null) Toast.makeText(context,"error while adding break", Toast.LENGTH_SHORT).show();;
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(BREAK_NAME,breakName);
@@ -141,6 +152,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(BREAK_TIME,breakTime);
         values.put(BREAK_REQUEST_CODE,requestCode);
         values.put(BREAK_ALERT_ON,isAlertOn);
+        values.put(USER_EMAIL, userEmail);
 
         long result = db.insert(BREAKS_TABLE, null, values);
 
@@ -150,7 +162,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public Cursor getALlBreaksData(){
-        String query = "SELECT * FROM " + BREAKS_TABLE;
+        sp = context.getSharedPreferences("login" , MODE_PRIVATE);
+        String  userEmail = sp.getString("Email",null);
+
+        String query = "SELECT * FROM BREAKS_TABLE WHERE USER_EMAIL='" + userEmail+"'";
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = null;
@@ -163,6 +178,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
     public void updateBreak(String breakID, String breakName, String breakDate, String breakTime, int requestCode, int isAlertOn){
         System.out.println("BreakDateUpdation " + breakName + isAlertOn);
+        sp = context.getSharedPreferences("login" , MODE_PRIVATE);
+        String  userEmail = sp.getString("Email",null);
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(BREAK_NAME,breakName);
@@ -170,6 +187,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(BREAK_TIME,breakTime);
         values.put(BREAK_REQUEST_CODE,requestCode);
         values.put(BREAK_ALERT_ON,isAlertOn);
+        values.put(USER_EMAIL, userEmail);
 
         long result = db.update(BREAKS_TABLE,values,"BREAK_ID =?", new String[]{breakID});
         if(result == -1){
