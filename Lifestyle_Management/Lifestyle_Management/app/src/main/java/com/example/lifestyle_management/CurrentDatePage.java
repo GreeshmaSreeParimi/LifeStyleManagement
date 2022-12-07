@@ -39,7 +39,7 @@ public class CurrentDatePage extends AppCompatActivity {
         taskRV = findViewById(R.id.idTasks);
         Breaks_Storage_ModelArrayList = new ArrayList<Breaks_Storage_Model>();
         databasehelper = new DatabaseHelper(this);
-        String currentDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+        String currentDate = new SimpleDateFormat("yyyy-M-d", Locale.getDefault()).format(new Date());
         Task_Storage_ModelArrayList = new ArrayList<Task_Storage_Model>();
 
         Cursor cursor = databasehelper.getALlBreaksData();
