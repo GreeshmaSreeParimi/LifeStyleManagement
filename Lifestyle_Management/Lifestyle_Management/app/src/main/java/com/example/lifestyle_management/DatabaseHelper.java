@@ -161,6 +161,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
+    // fetches  breaks data for each user.
     public Cursor getALlBreaksData(){
         sp = context.getSharedPreferences("login" , MODE_PRIVATE);
         String  userEmail = sp.getString("Email",null);
@@ -205,5 +206,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             Toast.makeText(context,"Break deleted successfully", Toast.LENGTH_SHORT).show();
         }
     }
+    // fetches entire breaks data
+    public Cursor getBreaksInformation(){
+//        sp = context.getSharedPreferences("login" , MODE_PRIVATE);
+//        String  userEmail = sp.getString("Email",null);
+
+        String query = "SELECT * FROM BREAKS_TABLE";
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = null;
+
+        if(db != null){
+            cursor = db.rawQuery(query,null);
+        }
+        return cursor;
+
+    }
+
 
 }
