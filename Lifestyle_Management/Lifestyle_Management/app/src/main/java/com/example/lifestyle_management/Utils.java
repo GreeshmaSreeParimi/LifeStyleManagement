@@ -66,7 +66,7 @@ public class Utils {
         AlarmManager am = (AlarmManager)this._context.getSystemService(Context.ALARM_SERVICE);                   //assigning alarm manager object to set alarm
         Intent intent = new Intent(this._context, AlarmBroadcast.class);
 
-        intent.putExtra("event", break_title);                                                       //sending data to alarm class to create channel and notification
+        intent.putExtra("event", break_title);                                                      //sending data to alarm class to create channel and notification
         intent.putExtra("date", break_date);
         intent.putExtra("time", break_time);
         if(break_requestCode == -1){
