@@ -130,7 +130,7 @@ public class CreateAccount extends AppCompatActivity {
         // if digit is not present
         if (!digit.matcher(password.getText().toString()).find()) {
             password.requestFocus();
-            password.setError("Atleast 1 digit alphabet is required");
+            password.setError("Atleast 1 digit is required");
             return false;
         }
         if (!spc_charac.matcher(password.getText().toString()).find()) {
