@@ -111,7 +111,7 @@ public class EditBreaksPage extends AppCompatDialogFragment {
                             Toast.makeText(getContext(), "Alarm set for selected date and time", Toast.LENGTH_SHORT).show();
 
                         }
-                        listener.updateBreaksData(title,date,out_time,position,requestCode,break_ID,isBreakAlertOn);
+                        listener.updateBreaksData(title,date,time,position,requestCode,break_ID,isBreakAlertOn);
                     }
 
                 });
@@ -263,6 +263,7 @@ public class EditBreaksPage extends AppCompatDialogFragment {
 
     }
     String getDateInFormat(String date, String time) {
+
         return date + TIME_FORMATTER + time +":00";
     }
 

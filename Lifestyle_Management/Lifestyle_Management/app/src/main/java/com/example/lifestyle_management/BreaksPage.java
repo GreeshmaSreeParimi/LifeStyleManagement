@@ -4,6 +4,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -20,8 +23,12 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 
 public class BreaksPage extends AppCompatActivity implements AddBreaksPage.AddBreaksPageListener, EditBreaksPage.EditBreaksPageListener {
     private FloatingActionButton addBreakBtn;
@@ -29,6 +36,10 @@ public class BreaksPage extends AppCompatActivity implements AddBreaksPage.AddBr
     ArrayList<Breaks_Storage_Model> Breaks_Storage_ModelArrayList;
     RecyclerView breakRV;
     DatabaseHelper databasehelper;
+    private static char TIME_FORMATTER = 'T';
+    private static String DATA_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -140,8 +151,63 @@ public class BreaksPage extends AppCompatActivity implements AddBreaksPage.AddBr
         breakAdapter = new BreakAdapter(this, Breaks_Storage_ModelArrayList);
         breakRV.setAdapter(breakAdapter);
 
+        if(isAlertOn == 1){
+
+            setAlarm(this,break_title,date,time,requestCode,isAlertOn);
+
+        }
+        if (isAlertOn == 0){
+
+            AlarmManager am = (AlarmManager)this.getSystemService(Context.ALARM_SERVICE);                   //assigning alarm manager object to set alarm
+            Intent intent = new Intent(getApplicationContext(), AlarmBroadcast.class);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), requestCode, intent, PendingIntent.FLAG_IMMUTABLE);
+            am.cancel(pendingIntent);
+            pendingIntent.cancel();
+        }
 
     }
+
+    private void setAlarm(Context context, String break_title, String date, String time, int requestCode, int isBreakAlertOn) {
+        AlarmManager am = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);                   //assigning alarm manager object to set alarm
+        Intent intent = new Intent(getApplicationContext(), AlarmBroadcast.class);
+        Bundle b= new Bundle();
+        b.putString("event", break_title);
+        b.putString("date", date);
+        b.putString("time", time);
+        b.putInt("requestCode",requestCode);
+//        b.putString("channelId",channelId);
+        b.putInt("isBreakAlertOn",isBreakAlertOn);
+        intent.putExtras(b);
+        System.out.println("Set Alarm isAlertOn:"+isBreakAlertOn);
+        System.out.println("Bundle alert value:"+b.getInt("isBreakAlertOn"));
+
+        Bundle bundle = intent.getExtras();
+        int isAlert = bundle.getInt("isBreakAlertOn");
+        System.out.println("Is ALert: "+isAlert);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), requestCode, intent, PendingIntent.FLAG_IMMUTABLE);
+        String dateandtime = getDateInFormat(date,time);
+        //String testDate = "2022-10-29"+'T'+timeToNotify+":00";
+        System.out.println("Break page event : "+break_title);
+        System.out.println("Break page datetime : "+dateandtime);
+        DateFormat formatter = new SimpleDateFormat(DATA_FORMAT);
+
+        try {
+            Date date1 = formatter.parse(dateandtime);
+            System.out.println(date1.getTime());
+            am.setExact(AlarmManager.RTC_WAKEUP, date1.getTime(), pendingIntent);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Intent intentBack = new Intent(getApplicationContext(), BreaksPage.class); //this intent will be called once the setting alarm is complete
+        Toast.makeText(getApplicationContext(), "Alarm turned on for  "+break_title, Toast.LENGTH_SHORT).show();
+        intentBack.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intentBack);                                                                  //navigates from adding reminder activity to mainactivity
+    }
+    String getDateInFormat(String date, String time) {
+        return date + TIME_FORMATTER + time +":00";
+    }
+
+
     @Override
     public  void deleteBreaksData(){
         databasehelper = new DatabaseHelper(BreaksPage.this);
