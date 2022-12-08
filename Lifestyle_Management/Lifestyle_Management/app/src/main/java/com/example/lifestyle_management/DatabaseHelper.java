@@ -177,6 +177,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return cursor;
 
     }
+    
+     public Cursor getALlBreaksDataIfAlertIsOn(){
+        String query = "SELECT * FROM BREAKS_TABLE WHERE BREAK_ALERT_ON = 1";
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = null;
+
+        if(db != null){
+            cursor = db.rawQuery(query,null);
+        }
+        return cursor;
+
+    }
+    
     public void updateBreak(String breakID, String breakName, String breakDate, String breakTime, int requestCode, int isAlertOn){
         System.out.println("BreakDateUpdation " + breakName + isAlertOn);
         sp = context.getSharedPreferences("login" , MODE_PRIVATE);
