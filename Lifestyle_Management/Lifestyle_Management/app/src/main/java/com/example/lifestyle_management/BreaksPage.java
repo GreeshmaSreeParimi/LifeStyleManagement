@@ -202,7 +202,7 @@ public class BreaksPage extends AppCompatActivity implements AddBreaksPage.AddBr
             e.printStackTrace();
         }
         Intent intentBack = new Intent(getApplicationContext(), BreaksPage.class); //this intent will be called once the setting alarm is complete
-        Toast.makeText(getApplicationContext(), "Alarm turned on for  "+break_title, Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), "Alert updated for  "+break_title, Toast.LENGTH_SHORT).show();
         intentBack.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intentBack);                                                                  //navigates from adding reminder activity to mainactivity
     }
