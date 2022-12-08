@@ -22,7 +22,7 @@
             android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"
             android:text="Task_name"
-            android:textColor="@color/black"
+            android:textColor="@color/colorSnowWhite"
             android:layout_centerVertical="true"
             android:textSize="18sp"
             android:textStyle="bold" />
