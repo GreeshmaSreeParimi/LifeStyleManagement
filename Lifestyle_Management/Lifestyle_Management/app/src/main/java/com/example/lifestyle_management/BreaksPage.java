@@ -123,6 +123,9 @@ public class BreaksPage extends AppCompatActivity implements AddBreaksPage.AddBr
         breakAdapter = new BreakAdapter(this, Breaks_Storage_ModelArrayList);
         breakRV.setAdapter(breakAdapter);
 
+        int isAlert=1;
+        setAlarm(this,break_title,date,time,requestCode,isAlert);
+
     }
 
     @Override
