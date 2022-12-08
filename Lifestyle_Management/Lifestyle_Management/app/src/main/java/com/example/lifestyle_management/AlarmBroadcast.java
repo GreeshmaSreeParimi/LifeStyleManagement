@@ -18,6 +18,7 @@ public class AlarmBroadcast extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+
         Bundle bundle = intent.getExtras();
         String text = bundle.getString("event");
         String date = bundle.getString("date") + " " + bundle.getString("time");
@@ -56,6 +57,6 @@ public class AlarmBroadcast extends BroadcastReceiver {
             mBuilder.setChannelId(channelId);
         }
         Notification notification = mBuilder.build();
-        notificationManager.notify(1, notification);
+        notificationManager.notify(requestCode, notification);
     }
 }
